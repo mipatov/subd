@@ -23,20 +23,19 @@ class TableViewWindow(QtWidgets.QMainWindow, FormViewTable.Ui_MainWindow):
         self.tableView.setModel(model)
 
 class TableWidgetWindow(QtWidgets.QMainWindow, FormWidgetTable.Ui_MainWindow):
-    def __init__(self, table):
+    def __init__(self, table,name):
         super().__init__()
         self.setupUi(self)
 
         n, m = len(table[0]), len(table)
 
+        self.setWindowTitle(name)
+
         self.tableWidget.setColumnCount(n)
         self.tableWidget.setRowCount(m)
-        # print(type(table[0].keys()))
-        a = GetTupleOfFullName(table[0].keys())
-        print(a[0])
         self.tableWidget.setHorizontalHeaderLabels(GetTupleOfFullName(table[0].keys()))
         self.tableWidget.resizeColumnsToContents()
-        self.tableWidget.setColumnWidth(n-1,len(table[0]["NIR"])*5)
+        # self.tableWidget.setColumnWidth(n-1,len(table[0]["NIR"])*5)
 
         for i in range(0, m):
             j = 0

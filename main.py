@@ -31,20 +31,31 @@ def SumPFinInProg(con):
             cur.execute(q)
         con.commit()
 
-def GetTableNtp(con):
+def GetTableNir(con):
     with con.cursor() as cur:
-        cur.execute("SELECT pg.PROG, pj.F, pj.SROK_N, pj.SROK_K, pj.isp, pj.RUK, pj.PFIN, pj.FFIN,  pj.GRNTI, pj.CODTYPE, pj.NIR FROM nir.ntp_proj pj, nir.ntp_prog pg where pj.CODPROG = pg.CODPROG;")
+        cur.execute("SELECT pg.PROG, pj.F,  pj.isp, pj.PFIN, pj.FFIN,pj.SROK_N, pj.SROK_K,pj.RUK, pj.GRNTI, pj.CODTYPE, pj.NIR FROM nir.ntp_proj pj, nir.ntp_prog pg where pj.CODPROG = pg.CODPROG;")
+        table = cur.fetchall()
+        return table
+
+def GetTableProg(con):
+    with con.cursor() as cur:
+        # cur.execute("SELECT pg.PROG, pg.NPROJ,  pg.PFIN,pg.PFIN1,pg.PFIN2,pg.PFIN3,pg.PFIN4, pg.FFIN,pg.FFIN1,pg.FFIN2,pg.FFIN3,pg.FFIN4 FROM nir.ntp_proj pj, nir.ntp_prog pg")
+        cur.execute("SELECT CODPROG, PROG, NPROJ, PFIN,PFIN1,PFIN2,PFIN3,PFIN4, FFIN,FFIN1,FFIN2,FFIN3,FFIN4 FROM nir.ntp_prog ")
+
         table = cur.fetchall()
         return table
 
 def main():
     with closing(pymysql.connect('localhost', 'root', 'root', 'nir', cursorclass=DictCursor)) as con:
-        ntpTable = GetTableNtp(con)
+        nirTable = GetTableNir(con)
+        progTable = GetTableProg(con)
 
     # print(ntpTable[0]["F"])
     app = QtWidgets.QApplication([])
-    window = TableWidgetWindow(ntpTable)
+    window = TableWidgetWindow(nirTable,"Данные о НИР")
     window.show()
+    window1 = TableWidgetWindow(progTable,"Данные о программах")
+    window1.show()
     app.exec()
 
 
