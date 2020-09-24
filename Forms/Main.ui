@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>571</width>
+    <height>385</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Сопровождение НТП</string>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>571</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="tables">
+    <property name="title">
+     <string> Данные</string>
+    </property>
+    <addaction name="nir"/>
+    <addaction name="prog"/>
+    <addaction name="vuz"/>
+   </widget>
+   <widget class="QMenu" name="analis">
+    <property name="title">
+     <string>Анализ данных</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="fin">
+    <property name="title">
+     <string>Финансирование</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="help">
+    <property name="title">
+     <string>Справка</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="about">
+    <property name="title">
+     <string>О программе</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="closebtn">
+    <property name="title">
+     <string>Закрыть</string>
+    </property>
+    <addaction name="closeaction"/>
+   </widget>
+   <addaction name="tables"/>
+   <addaction name="analis"/>
+   <addaction name="fin"/>
+   <addaction name="help"/>
+   <addaction name="about"/>
+   <addaction name="closebtn"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="nir">
+   <property name="text">
+    <string>Таблица с НИР</string>
+   </property>
+  </action>
+  <action name="prog">
+   <property name="text">
+    <string>Таблица с НТП</string>
+   </property>
+  </action>
+  <action name="vuz">
+   <property name="text">
+    <string>Данные о вузах</string>
+   </property>
+  </action>
+  <action name="closeaction">
+   <property name="text">
+    <string>Закрыть</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

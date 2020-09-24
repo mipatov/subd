@@ -2,11 +2,14 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>972</width>
+    <width>984</width>
     <height>551</height>
    </rect>
   </property>
@@ -26,7 +29,7 @@
        </font>
       </property>
       <property name="text">
-       <string>ВЫХОД</string>
+       <string>ЗАКРЫТЬ</string>
       </property>
      </widget>
     </item>
@@ -529,7 +532,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>972</width>
+     <width>984</width>
      <height>21</height>
     </rect>
    </property>
