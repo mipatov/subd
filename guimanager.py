@@ -25,19 +25,10 @@ class GUI_Common():
 
 
 class TableClass(GUI_Common):
-    def FillTable(self, table, name):
+    def FillTable(self,table):
         n, m = len(table[0]), len(table)
 
-        self.setWindowTitle(name)
-
-        self.tableWidget.setColumnCount(n)
         self.tableWidget.setRowCount(m)
-        self.tableWidget.setHorizontalHeaderLabels(GetTupleOfFullName(table[0].keys()))
-        self.tableWidget.resizeColumnsToContents()
-
-        self.tableWidget.clicked.connect(self.rowselection)
-
-
         for i in range(0, m):
             j = 0
             for cname in table[0].keys():
@@ -46,38 +37,64 @@ class TableClass(GUI_Common):
                 self.tableWidget.setItem(i, j, item)
                 j += 1
 
+    def SetUpTable(self, table):
+        n, m = len(table[0]), len(table)
+        self.tableWidget.setColumnCount(n)
+        self.tableWidget.setHorizontalHeaderLabels(GetTupleOfFullName(table[0].keys()))
+        self.tableWidget.resizeColumnsToContents()
+
+        self.tableWidget.clicked.connect(self.rowselection)
+        self.FillTable(table)
+
 
 class FuncTable(QtWidgets.QMainWindow, FormWidgetTable.Ui_MainWindow,TableClass):
+    sortdesc = False
+    sorttype = 0
+
     def __init__(self, table, name):
         super().__init__()
         self.setupUi(self)
-        # print(self.tableWidget.horizontalHeaderItem(1))
-        # self.tableWidget.sortItems(1,Qt.SortOrder.)
-        # self.tableWidget.horizontalHeaderItem(1).clicked.connect(self.sort)
-        self.FillTable(table, name)
 
-    def sort(self):
-        print(self.tableWidget.currentColumn())
+        self.sortbox.currentIndexChanged.connect(self.sort)
+        self.sortbtn.clicked.connect(self.togglesort)
+
+        self.setWindowTitle(name)
+        self.SetUpTable(table)
+
+    def sort(self,i):
+        self.sorttype = i
+        table = dbm.GetTableNir(self.sorttype,self.sortdesc)
+        self.FillTable(table)
+        # print(i)
+
+    def togglesort(self):
+        self.sortdesc = not self.sortdesc
+        table = dbm.GetTableNir(self.sorttype,self.sortdesc)
+        self.FillTable(table)
+
+        if not self.sortdesc:
+            self.sortbtn.setText("↑")
+        else:
+            self.sortbtn.setText("↓")
+        # print("sort desc: "+str(self.sortdesc))
 
 
 class OnlyTable(QtWidgets.QDialog, OnlyTableForm.Ui_Dialog, TableClass):
     def __init__(self, table,name):
         super().__init__()
         self.setupUi(self)
-
-        self.FillTable(table, name)
+        self.setWindowTitle(name)
+        self.SetUpTable(table)
+        # self.FillTable(table)
 
 
 class MainWindow(QtWidgets.QMainWindow, Main.Ui_MainWindow):
-    dbref =''
-    # appref = ''
     windows = []
 
-    def __init__(self, db,app):
+    def __init__(self, app):
         super().__init__()
         self.setupUi(self)
-        self.dbref = db
-        # self.appref = app
+
 
         self.nir.triggered.connect(self.opennirtable)
         self.prog.triggered.connect(self.openprogtable)
@@ -88,7 +105,7 @@ class MainWindow(QtWidgets.QMainWindow, Main.Ui_MainWindow):
 
 
     def opennirtable(self):
-        nirTable = dbm.GetTableNir(self.dbref)
+        nirTable = dbm.GetTableNir()
         window = FuncTable(nirTable, "Данные о НИР")
         window.show()
         self.windows.append(window)
@@ -96,7 +113,7 @@ class MainWindow(QtWidgets.QMainWindow, Main.Ui_MainWindow):
 
 
     def openprogtable(self):
-        table = dbm.GetProgTable(self.dbref)
+        table = dbm.GetProgTable()
         window = OnlyTable(table, "Данные о программах")
         window.show()
 
@@ -104,7 +121,7 @@ class MainWindow(QtWidgets.QMainWindow, Main.Ui_MainWindow):
 
 
     def openvuztable(self):
-        table = dbm.GetVuzTable(self.dbref)
+        table = dbm.GetVuzTable()
         window = OnlyTable(table, "Данные о вузах")
         window.show()
         self.windows.append(window)

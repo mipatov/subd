@@ -12,7 +12,8 @@ def main():
         return
     app = QtWidgets.QApplication([])
 
-    window = MainWindow(db,app)
+    window = MainWindow(app)
+    window.dbref  =db
     window.show()
 
     sys.exit(app.exec_())

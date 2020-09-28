@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>984</width>
-    <height>551</height>
+    <height>571</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,81 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="2" column="5">
+    <item row="0" column="3">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Сртировка по:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="4">
+     <widget class="QComboBox" name="sortbox">
+      <property name="currentText">
+       <string>Программа +№ проекта</string>
+      </property>
+      <item>
+       <property name="text">
+        <string>Программа +№ проекта</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Название вуза</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Плановое финансирование</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="0" column="6">
+     <widget class="QPushButton" name="pushButton_3">
+      <property name="font">
+       <font>
+        <family>Trebuchet MS</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Фильтрация</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="7">
+     <widget class="QTableWidget" name="tableWidget">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="font">
+       <font>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QPushButton" name="pushButton_7">
+      <property name="font">
+       <font>
+        <family>Trebuchet MS</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Удалить </string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="6">
      <widget class="QPushButton" name="pushButton_4">
       <property name="font">
        <font>
@@ -45,19 +119,6 @@
       </property>
       <property name="text">
        <string>Редактировать </string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="3">
-     <widget class="QPushButton" name="pushButton_8">
-      <property name="font">
-       <font>
-        <family>Trebuchet MS</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Сортировка</string>
       </property>
      </widget>
     </item>
@@ -489,39 +550,15 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="4">
-     <widget class="QPushButton" name="pushButton_3">
+    <item row="0" column="5">
+     <widget class="QToolButton" name="sortbtn">
       <property name="font">
        <font>
-        <family>Trebuchet MS</family>
         <pointsize>10</pointsize>
        </font>
       </property>
       <property name="text">
-       <string>Фильтрация</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <widget class="QPushButton" name="pushButton_7">
-      <property name="font">
-       <font>
-        <family>Trebuchet MS</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Удалить </string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0" colspan="6">
-     <widget class="QTableWidget" name="tableWidget">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="focusPolicy">
-       <enum>Qt::ClickFocus</enum>
+       <string>↑</string>
       </property>
      </widget>
     </item>

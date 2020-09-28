@@ -21,14 +21,25 @@ fields = {"CODPROG": "код НТП",
             "FFIN1":"Факт. фин. на 1 кв.",
             "FFIN2":"Факт. фин. на 2 кв.",
             "FFIN3":"Факт. фин. на 3 кв.",
-            "FFIN4":"Факт. фин. на 4 кв."
+            "FFIN4":"Факт. фин. на 4 кв.",
+            "CODVUZ":"код вуза",
+            "Z1":"название вуза",
+            "Z1FULL":"полное название вуза",
+            "Z2":"краткое название вуза",
+            "REGION":"федеральный округ",
+            "CITY":"название города",
+            "STATUS":"статус вуза",
+            "OBL":"код региона",
+            "OBLNAME":"название субъекта",
+            "GR_VED":"категория вуза",
+            "PROF":"профиль вуза"
 
             }
 
 def GetFullName(name):
     name = name.upper()
     if name in fields.keys():
-        return fields[name]
+        return fields[name].capitalize()
     else: return name
 
 def GetTupleOfFullName(fieldsTuple):
