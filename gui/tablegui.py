@@ -21,15 +21,18 @@ class TableClass():
 
 
     def selectirow(self,r):
-        self.setColortoRow(self.tableWidget, r, QtGui.QColor(0x6E86D6))
-        if self.cRow != -1 and self.cRow !=r:
-
-            self.setColortoRow(self.tableWidget, self.cRow, QtGui.QColor(0xFFFFFF))
-        self.cRow = r
-        if QtWidgets.QMainWindow in self.__class__.__bases__:
-            self.statusBar().showMessage(f'Строка {r+1}')
-            self.cRec = (self.tableWidget.item(r, 0).text(),self.tableWidget.item(r, 1).text())
-            print(self.cRec)
+        try:
+            self.setColortoRow(self.tableWidget, r, QtGui.QColor(0x6E86D6))
+            if self.cRow != -1 and self.cRow !=r:
+                self.setColortoRow(self.tableWidget, self.cRow, QtGui.QColor(0xFFFFFF))
+            self.cRow = r
+            if QtWidgets.QMainWindow in self.__class__.__bases__:
+                self.statusBar().showMessage(f'Строка {r+1}')
+                self.cRec = (self.tableWidget.item(r, 0).text(),self.tableWidget.item(r, 1).text())
+                # print(self.cRec)
+        except BaseException:
+            print("something wrong! try again")
+            return
 
     def FillTable(self,table):
         n, m = len(table[0]), len(table)
@@ -48,6 +51,7 @@ class TableClass():
         self.tableWidget.setColumnCount(n)
         self.tableWidget.setHorizontalHeaderLabels(GetTupleOfFullName(table[0].keys()))
         self.tableWidget.resizeColumnsToContents()
+        self.tableWidget.verticalHeader().setVisible(False)
 
         self.tableWidget.clicked.connect(self.rowselection)
         self.FillTable(table)
@@ -65,12 +69,32 @@ class FuncTable(QtWidgets.QMainWindow, FormWidgetTable.Ui_MainWindow,TableClass)
         self.sortbox.currentIndexChanged.connect(self.sort)
         self.sortbtn.clicked.connect(self.togglesort)
         self.addbtn.clicked.connect(self.addrec)
+        self.editbtn.clicked.connect(self.editrec)
         self.deletebtn.clicked.connect(self.removeRec)
 
         self.setWindowTitle(name)
         self.SetUpTable(table)
 
+        self.prog.triggered.connect(self.openprogtable)
+        self.vuz.triggered.connect(self.openvuztable)
+
+    def openprogtable(self):
+        table = dbm.GetProgTable()
+        window = OnlyTable(table, "Данные о программах")
+        window.show()
+
+        self.dialog = window
+
+
+    def openvuztable(self):
+        table = dbm.GetVuzTable()
+        window = OnlyTable(table, "Данные о вузах")
+        window.show()
+        self.dialog = window
+
     def removeRec(self):
+        if self.selectioncheck():
+            return
         window = RemoveRecord(self.cRec,self)
         window.show()
         self.dialog = window
@@ -79,7 +103,7 @@ class FuncTable(QtWidgets.QMainWindow, FormWidgetTable.Ui_MainWindow,TableClass)
     def findrec(self,prog,f):
         progs = self.tableWidget.findItems(prog, Qt.MatchExactly)
         progsind = tuple((pr.row()) for pr in progs)
-
+        print("find " + prog + str(f))
         for i in progsind:
             if int(self.tableWidget.item(i,1).text())==f:
                 print(i)
@@ -100,17 +124,28 @@ class FuncTable(QtWidgets.QMainWindow, FormWidgetTable.Ui_MainWindow,TableClass)
         # print(i)
 
     def addrec(self):
-        # prog , f = "", 0
-        window = AddRecord("Добавление записи",self)
+        window = AddRecord(self)
         window.show()
-        # window.parent = self
         self.dialog = window
+
+    def editrec(self):
+        if self.selectioncheck():
+            return
+        window = EditRecord(self)
+        window.show()
+        self.dialog = window
+
+    def selectioncheck(self):
+        if self.cRow ==-1:
+            self.statusBar().showMessage(f'Выберите запись!')
+        return self.cRow ==-1
 
     def togglesort(self):
         self.sortdesc = not self.sortdesc
         table = dbm.GetTableNir(self.sorttype,self.sortdesc)
         self.FillTable(table)
-        self.findrec(self.cRec[0], self.cRec[1])
+        if self.cRec[1] != "":
+            self.findrec(self.cRec[0],int(self.cRec[1]))
 
         if not self.sortdesc:
             self.sortbtn.setText("↑")

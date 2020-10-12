@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'Forms/FormTable.ui'
+# Form implementation generated from reading ui file 'gui/Forms/FormTable.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.1
 #
@@ -227,10 +227,35 @@ class Ui_MainWindow(object):
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 984, 21))
         self.menubar.setObjectName("menubar")
+        self.tables = QtWidgets.QMenu(self.menubar)
+        self.tables.setObjectName("tables")
+        self.analis = QtWidgets.QMenu(self.menubar)
+        self.analis.setObjectName("analis")
+        self.fin = QtWidgets.QMenu(self.menubar)
+        self.fin.setObjectName("fin")
+        self.help = QtWidgets.QMenu(self.menubar)
+        self.help.setObjectName("help")
+        self.about = QtWidgets.QMenu(self.menubar)
+        self.about.setObjectName("about")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+        self.nir = QtWidgets.QAction(MainWindow)
+        self.nir.setObjectName("nir")
+        self.prog = QtWidgets.QAction(MainWindow)
+        self.prog.setObjectName("prog")
+        self.vuz = QtWidgets.QAction(MainWindow)
+        self.vuz.setObjectName("vuz")
+        self.closeaction = QtWidgets.QAction(MainWindow)
+        self.closeaction.setObjectName("closeaction")
+        self.tables.addAction(self.prog)
+        self.tables.addAction(self.vuz)
+        self.menubar.addAction(self.tables.menuAction())
+        self.menubar.addAction(self.analis.menuAction())
+        self.menubar.addAction(self.fin.menuAction())
+        self.menubar.addAction(self.help.menuAction())
+        self.menubar.addAction(self.about.menuAction())
 
         self.retranslateUi(MainWindow)
         self.pushButton_4.clicked.connect(MainWindow.close)
@@ -239,7 +264,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.label.setText(_translate("MainWindow", "Сртировка по:"))
+        self.label.setText(_translate("MainWindow", "Сортировка по:"))
         self.sortbox.setCurrentText(_translate("MainWindow", "Программа +№ проекта"))
         self.sortbox.setItemText(0, _translate("MainWindow", "Программа +№ проекта"))
         self.sortbox.setItemText(1, _translate("MainWindow", "Название вуза"))
@@ -250,3 +275,12 @@ class Ui_MainWindow(object):
         self.editbtn.setText(_translate("MainWindow", "Редактировать "))
         self.addbtn.setText(_translate("MainWindow", "Добавить "))
         self.sortbtn.setText(_translate("MainWindow", "↑"))
+        self.tables.setTitle(_translate("MainWindow", " Данные"))
+        self.analis.setTitle(_translate("MainWindow", "Анализ данных"))
+        self.fin.setTitle(_translate("MainWindow", "Финансирование"))
+        self.help.setTitle(_translate("MainWindow", "Справка"))
+        self.about.setTitle(_translate("MainWindow", "О программе"))
+        self.nir.setText(_translate("MainWindow", "Таблица с НИР"))
+        self.prog.setText(_translate("MainWindow", "Таблица с НТП"))
+        self.vuz.setText(_translate("MainWindow", "Данные о вузах"))
+        self.closeaction.setText(_translate("MainWindow", "Закрыть"))

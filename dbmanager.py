@@ -138,13 +138,39 @@ VALUES('{cprog}','{str(f).rjust(4,"0")}','{nir}','{isp}','{cisp}','{srn}','{srk}
 
         dbc.dbcon.commit()
 
-def RemoveRecord(prog,f):
+def EditRecord(prog,f,nir,isp,srn,srk,ruk,ruk2,grnti,ctype,pfin):
     with dbc.dbcon.cursor() as cur:
         cur.execute(f"select codprog from nir.ntp_prog where prog = '{prog}'")
         row  = cur.fetchone()
         cprog = row["codprog"]
-        cur.execute(f"delete from nir.ntp_proj where codprog = {cprog} and f = '{f}'")
+        cur.execute(f"select codvuz from nir.vuz where z2 = '{isp}'")
+        cisp = cur.fetchone()["codvuz"].strip()
+        print(cisp)
+        pfin = int(pfin)
+        print(str(pfin))
+        pfin123 = round(pfin/4)
+        pfin4 = pfin - 3 * round(pfin / 4)
+
+        cur.execute(f"""Replace INTO nir.ntp_proj (CODPROG,F,NIR,ISP,CODISP,SROK_N,SROK_K,RUK,RUK2,GRNTI,CODTYPE,PFIN,PFIN1,PFIN2,PFIN3,PFIN4,FFIN,FFIN1,FFIN2,FFIN3,FFIN4)
+        VALUES('{cprog}','{str(f).rjust(4, "0")}','{nir}','{isp}','{cisp}','{srn}','{srk}','{ruk}','{ruk2}','{grnti}','{ctype}',{pfin},{pfin123},{pfin123},{pfin123},{pfin4},0,0,0,0,0)""")
+
+#         cur.execute(f"""Update nir.ntp_proj set CODPROG = '{cprog}',F = '{str(f).rjust(4,"0")}',NIR = '{nir}',ISP= '{isp}',CODISP= '{cisp}',SROK_N = '{srn}',SROK_K = '{srk}',
+# RUK='{ruk}',RUK2='{ruk2}',GRNTI='{grnti}',CODTYPE='{ctype}',PFIN={pfin},PFIN1={pfin123},PFIN2={pfin123},PFIN3={pfin123},PFIN4= {pfin4}""")
+
         dbc.dbcon.commit()
+
+def RemoveRecord(prog,f):
+    with dbc.dbcon.cursor() as cur:
+        # cur.execute(f"select codprog from nir.ntp_prog where prog = '{prog}'")
+        # row  = cur.fetchone()
+        # cprog = row["codprog"]
+        cur.execute(f"delete from ntp_proj using ntp_proj, ntp_prog  where ntp_prog.prog = '{prog}' and ntp_prog.codprog = ntp_proj.codprog and ntp_proj.f = '{f}'")
+        dbc.dbcon.commit()
+
+def GetRecord(prog,f):
+    with dbc.dbcon.cursor() as cur:
+        cur.execute(f"select nj.CODPROG,nj.F,nj.NIR,nj.ISP,nj.CODISP,nj.SROK_N,nj.SROK_K,nj.RUK,nj.RUK2,nj.GRNTI,nj.CODTYPE,nj.PFIN from  nir.ntp_proj nj,nir.ntp_prog ng where ng.prog = '{prog}' and ng.codprog = nj.codprog and nj.f = '{f}'")
+        return cur.fetchone()
 
 
 if __name__ == '__main__':
