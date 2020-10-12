@@ -21,7 +21,7 @@
     <item row="0" column="3">
      <widget class="QLabel" name="label">
       <property name="text">
-       <string>Сртировка по:</string>
+       <string>Сортировка по:</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -51,7 +51,7 @@
      </widget>
     </item>
     <item row="0" column="6">
-     <widget class="QPushButton" name="pushButton_3">
+     <widget class="QPushButton" name="filterbtn">
       <property name="font">
        <font>
         <family>Trebuchet MS</family>
@@ -80,7 +80,7 @@
      </widget>
     </item>
     <item row="0" column="2">
-     <widget class="QPushButton" name="pushButton_7">
+     <widget class="QPushButton" name="deletebtn">
       <property name="font">
        <font>
         <family>Trebuchet MS</family>
@@ -108,7 +108,7 @@
      </widget>
     </item>
     <item row="0" column="1">
-     <widget class="QPushButton" name="pushButton_2">
+     <widget class="QPushButton" name="editbtn">
       <property name="font">
        <font>
         <family>Trebuchet MS</family>
@@ -123,7 +123,7 @@
      </widget>
     </item>
     <item row="0" column="0">
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="addbtn">
       <property name="palette">
        <palette>
         <active>
