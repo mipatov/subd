@@ -21,7 +21,7 @@
     <item row="0" column="3">
      <widget class="QLabel" name="label">
       <property name="text">
-       <string>Сртировка по:</string>
+       <string>Сортировка по:</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -51,7 +51,7 @@
      </widget>
     </item>
     <item row="0" column="6">
-     <widget class="QPushButton" name="pushButton_3">
+     <widget class="QPushButton" name="filterbtn">
       <property name="font">
        <font>
         <family>Trebuchet MS</family>
@@ -63,24 +63,8 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="0" colspan="7">
-     <widget class="QTableWidget" name="tableWidget">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="font">
-       <font>
-        <weight>50</weight>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="focusPolicy">
-       <enum>Qt::ClickFocus</enum>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="2">
-     <widget class="QPushButton" name="pushButton_7">
+     <widget class="QPushButton" name="deletebtn">
       <property name="font">
        <font>
         <family>Trebuchet MS</family>
@@ -107,23 +91,8 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1">
-     <widget class="QPushButton" name="pushButton_2">
-      <property name="font">
-       <font>
-        <family>Trebuchet MS</family>
-        <pointsize>10</pointsize>
-        <weight>50</weight>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Редактировать </string>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="0">
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="addbtn">
       <property name="palette">
        <palette>
         <active>
@@ -550,6 +519,21 @@
       </property>
      </widget>
     </item>
+    <item row="0" column="1">
+     <widget class="QPushButton" name="editbtn">
+      <property name="font">
+       <font>
+        <family>Trebuchet MS</family>
+        <pointsize>10</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Редактировать </string>
+      </property>
+     </widget>
+    </item>
     <item row="0" column="5">
      <widget class="QToolButton" name="sortbtn">
       <property name="font">
@@ -559,6 +543,37 @@
       </property>
       <property name="text">
        <string>↑</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="8">
+     <widget class="QTableWidget" name="tableWidget">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="font">
+       <font>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="7">
+     <widget class="QToolButton" name="toolButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>X</string>
       </property>
      </widget>
     </item>
@@ -573,8 +588,60 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="tables">
+    <property name="title">
+     <string> Данные</string>
+    </property>
+    <addaction name="prog"/>
+    <addaction name="vuz"/>
+   </widget>
+   <widget class="QMenu" name="analis">
+    <property name="title">
+     <string>Анализ данных</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="fin">
+    <property name="title">
+     <string>Финансирование</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="help">
+    <property name="title">
+     <string>Справка</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="about">
+    <property name="title">
+     <string>О программе</string>
+    </property>
+   </widget>
+   <addaction name="tables"/>
+   <addaction name="analis"/>
+   <addaction name="fin"/>
+   <addaction name="help"/>
+   <addaction name="about"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="nir">
+   <property name="text">
+    <string>Таблица с НИР</string>
+   </property>
+  </action>
+  <action name="prog">
+   <property name="text">
+    <string>Таблица с НТП</string>
+   </property>
+  </action>
+  <action name="vuz">
+   <property name="text">
+    <string>Данные о вузах</string>
+   </property>
+  </action>
+  <action name="closeaction">
+   <property name="text">
+    <string>Закрыть</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>

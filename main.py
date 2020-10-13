@@ -1,7 +1,5 @@
-import dbmanager as dbm
 import sys
-from PyQt5 import QtWidgets
-from guimanager import *
+from gui.guimanager import *
 
 
 def main():

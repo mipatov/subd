@@ -75,7 +75,7 @@ def GetTableNir(sort = 0, desc = False):
     else:
         sortexpr = sorttuple[sort]
     with dbc.dbcon.cursor() as cur:
-        cur.execute("SELECT pg.PROG, pj.F,  pj.isp, pj.PFIN,pj.PFIN1,pg.PFIN2,pg.PFIN3,pg.PFIN4, pg.FFIN,pg.FFIN1,pg.FFIN2,pg.FFIN3,pg.FFIN4,pj.SROK_N, pj.SROK_K,pj.RUK, pj.GRNTI, pj.CODTYPE, pj.NIR FROM nir.ntp_proj pj, nir.ntp_prog pg where pj.CODPROG = pg.CODPROG "+sortexpr)
+        cur.execute("SELECT pg.PROG, pj.F,  pj.isp, pj.PFIN, pg.FFIN,pj.SROK_N, pj.SROK_K,pj.RUK, pj.GRNTI, pj.CODTYPE,pj.PFIN1,pj.PFIN2,pj.PFIN3,pj.PFIN4,pg.FFIN1,pg.FFIN2,pg.FFIN3,pg.FFIN4, pj.NIR FROM nir.ntp_proj pj, nir.ntp_prog pg where pj.CODPROG = pg.CODPROG "+sortexpr)
         table = cur.fetchall()
         return table
 
@@ -83,6 +83,10 @@ def GetProgTable():
     with dbc.dbcon.cursor() as cur:
         cur.execute("SELECT CODPROG, PROG, NPROJ, PFIN,PFIN1,PFIN2,PFIN3,PFIN4, FFIN,FFIN1,FFIN2,FFIN3,FFIN4 FROM nir.ntp_prog ")
         table = cur.fetchall()
+
+        cur.execute(f"select codprog from nir.ntp_prog where prog = 'Экраноплан'")
+        print(cur.fetchone()["codprog"])
+        # cprog =
         return table
 
 def GetVuzTable():
@@ -90,6 +94,84 @@ def GetVuzTable():
         cur.execute("SELECT * FROM nir.vuz ")
         table = cur.fetchall()
         return table
+
+def GetProgTuple():
+    with dbc.dbcon.cursor() as cur:
+        cur.execute("SELECT PROG FROM nir.ntp_prog ")
+        progtup = ((row["PROG"]) for row in cur.fetchall())
+        return tuple(progtup)
+
+def GetMaxProjInProg(prog):
+    with dbc.dbcon.cursor() as cur:
+        cur.execute(f"SELECT max(pj.F) F FROM nir.ntp_prog pg, nir.ntp_proj pj where pg.prog = '{prog}' and pg.codprog = pj.codprog")
+        i = cur.fetchone()["F"]
+        if not i:
+            i = 0
+        return i
+
+def GetVuzTuple():
+    with dbc.dbcon.cursor() as cur:
+        cur.execute("SELECT z2 FROM nir.vuz ")
+        vuztup = ((row["z2"]) for row in cur.fetchall())
+        return tuple(vuztup)
+
+def CheckProjNum(prog,num):
+    with dbc.dbcon.cursor() as cur:
+        cur.execute(f"SELECT pj.F FROM nir.ntp_prog pg, nir.ntp_proj pj where pg.prog = '{prog}' and pg.codprog = pj.codprog")
+        nums = tuple(int(row["F"]) for row in cur.fetchall())
+        return not (num in nums)
+
+def AddRecord(prog,f,nir,isp,srn,srk,ruk,ruk2,grnti,ctype,pfin):
+    with dbc.dbcon.cursor() as cur:
+        cur.execute(f"select codprog from nir.ntp_prog where prog = '{prog}'")
+        row  = cur.fetchone()
+        cprog = row["codprog"]
+        cur.execute(f"select codvuz from nir.vuz where z2 = '{isp}'")
+        cisp = cur.fetchone()["codvuz"].strip()
+        print(cisp)
+        pfin = int(pfin)
+        pfin123 = round(pfin/4)
+        pfin4 = pfin - 3 * round(pfin / 4)
+
+        cur.execute(f"""INSERT INTO nir.ntp_proj (CODPROG,F,NIR,ISP,CODISP,SROK_N,SROK_K,RUK,RUK2,GRNTI,CODTYPE,PFIN,PFIN1,PFIN2,PFIN3,PFIN4,FFIN,FFIN1,FFIN2,FFIN3,FFIN4)
+VALUES('{cprog}','{str(f).rjust(4,"0")}','{nir}','{isp}','{cisp}','{srn}','{srk}','{ruk}','{ruk2}','{grnti}','{ctype}',{pfin},{pfin123},{pfin123},{pfin123},{pfin4},0,0,0,0,0)""")
+
+        dbc.dbcon.commit()
+
+def EditRecord(prog,f,nir,isp,srn,srk,ruk,ruk2,grnti,ctype,pfin):
+    with dbc.dbcon.cursor() as cur:
+        cur.execute(f"select codprog from nir.ntp_prog where prog = '{prog}'")
+        row  = cur.fetchone()
+        cprog = row["codprog"]
+        cur.execute(f"select codvuz from nir.vuz where z2 = '{isp}'")
+        cisp = cur.fetchone()["codvuz"].strip()
+        print(cisp)
+        pfin = int(pfin)
+        print(str(pfin))
+        pfin123 = round(pfin/4)
+        pfin4 = pfin - 3 * round(pfin / 4)
+
+        cur.execute(f"""Replace INTO nir.ntp_proj (CODPROG,F,NIR,ISP,CODISP,SROK_N,SROK_K,RUK,RUK2,GRNTI,CODTYPE,PFIN,PFIN1,PFIN2,PFIN3,PFIN4,FFIN,FFIN1,FFIN2,FFIN3,FFIN4)
+        VALUES('{cprog}','{str(f).rjust(4, "0")}','{nir}','{isp}','{cisp}','{srn}','{srk}','{ruk}','{ruk2}','{grnti}','{ctype}',{pfin},{pfin123},{pfin123},{pfin123},{pfin4},0,0,0,0,0)""")
+
+#         cur.execute(f"""Update nir.ntp_proj set CODPROG = '{cprog}',F = '{str(f).rjust(4,"0")}',NIR = '{nir}',ISP= '{isp}',CODISP= '{cisp}',SROK_N = '{srn}',SROK_K = '{srk}',
+# RUK='{ruk}',RUK2='{ruk2}',GRNTI='{grnti}',CODTYPE='{ctype}',PFIN={pfin},PFIN1={pfin123},PFIN2={pfin123},PFIN3={pfin123},PFIN4= {pfin4}""")
+
+        dbc.dbcon.commit()
+
+def RemoveRecord(prog,f):
+    with dbc.dbcon.cursor() as cur:
+        # cur.execute(f"select codprog from nir.ntp_prog where prog = '{prog}'")
+        # row  = cur.fetchone()
+        # cprog = row["codprog"]
+        cur.execute(f"delete from ntp_proj using ntp_proj, ntp_prog  where ntp_prog.prog = '{prog}' and ntp_prog.codprog = ntp_proj.codprog and ntp_proj.f = '{f}'")
+        dbc.dbcon.commit()
+
+def GetRecord(prog,f):
+    with dbc.dbcon.cursor() as cur:
+        cur.execute(f"select nj.CODPROG,nj.F,nj.NIR,nj.ISP,nj.CODISP,nj.SROK_N,nj.SROK_K,nj.RUK,nj.RUK2,nj.GRNTI,nj.CODTYPE,nj.PFIN from  nir.ntp_proj nj,nir.ntp_prog ng where ng.prog = '{prog}' and ng.codprog = nj.codprog and nj.f = '{f}'")
+        return cur.fetchone()
+
 
 if __name__ == '__main__':
 
