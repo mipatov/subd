@@ -36,6 +36,11 @@ class TableClass():
             return
 
     def FillTable(self,table):
+        if len(table) ==0:
+            print("empty table")
+            self.tableWidget.setRowCount(0)
+            return
+
         n, m = len(table[0]), len(table)
 
         self.tableWidget.setRowCount(m)
@@ -66,7 +71,9 @@ class TableClass():
 class FuncTable(QtWidgets.QMainWindow, FormTableWidget.Ui_MainWindow,TableClass):
     sortdesc = False
     sorttype = 0
+    filter = None
     dialog = None
+
 
     def __init__(self, table, name):
         super().__init__()
@@ -145,7 +152,13 @@ class FuncTable(QtWidgets.QMainWindow, FormTableWidget.Ui_MainWindow,TableClass)
             self.sortbtn.setText("↑")
         else:
             self.sortbtn.setText("↓")
-        # print("sort desc: "+str(self.sortdesc))
+
+
+
+    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+        self.parent.mdi.closeAllSubWindows()
+        if self.dialog:
+            self.dialog.close()
 
 
 class OnlyTable(QtWidgets.QDialog, OnlyTableForm.Ui_Dialog, TableClass):
@@ -161,6 +174,7 @@ class Filter(QtWidgets.QDialog, FilterForm.Ui_Dialog,):
     def __init__(self,parent):
         super().__init__()
         self.setupUi(self)
+        self.parent = parent
 
         self.applybtn.clicked.connect(self.applyFilter)
         self.discardbtn.clicked.connect(self.discardFilter)
@@ -168,9 +182,73 @@ class Filter(QtWidgets.QDialog, FilterForm.Ui_Dialog,):
         self.prog.addItem("")
         self.prog.addItems(dbm.GetProgTuple())
 
+        self.prog.currentTextChanged.connect(self.checkEnableButtons)
+        self.checkprog.stateChanged.connect(self.checkEnableButtons)
+
+        if parent.filter:
+            if "prog" in parent.filter.keys():
+                self.checkprog.setCheckState(Qt.CheckState(2))
+                self.prog.setCurrentText(parent.filter["prog"])
+
+        self.checkEnableButtons()
+
+        if self.canApply():
+            self.applybtn.setEnabled(True)
+
 
     def applyFilter(self):
-        print("apply")
+        filter = None
+        if self.checkprog.checkState() == 2 and self.prog.currentText() != "":
+            filter = {"prog":self.prog.currentText()}
+
+        if not filter and not self.parent.filter:
+            return
+
+        self.parent.filter = filter
+
+        self.fillTable(filter)
+
+    def checkEnableButtons(self):
+        self.applybtn.setEnabled(self.canApply())
+        self.discardbtn.setEnabled(bool(self.parent.filter))
+
 
     def discardFilter(self):
-        print("discard")
+        self.checkprog.setCheckState(Qt.CheckState(0))
+        self.checkgeo.setCheckState(Qt.CheckState(0))
+
+        if not self.parent.filter:
+            return
+
+        self.fillTable()
+        self.parent.filter = None
+
+
+
+    def fillTable(self,filter = None):
+        table = dbm.GetTableNir(self.parent.sorttype,self.parent.sortdesc,filter)
+        self.parent.FillTable(table)
+        filtermes = ""
+
+        if filter:
+            mes = 'Фильтрация установлена'
+
+            if "prog" in self.parent.filter.keys():
+                filtermes+= f" Программа: {self.prog.currentText()}"
+            # if "geo" in self.parent.filter.keys():
+            #     filtermes+= f" Программа: {self.prog.currentText()}"
+        else:
+            mes = 'Фильтрация отменена'
+
+        self.parent.filterlabel.setText(filtermes)
+        self.parent.statusBar().showMessage(mes)
+
+
+        self.parent.setFocus()
+        self.parent.activateWindow()
+        self.parent.raise_()
+
+    def canApply(self):
+        canprog = self.checkprog.checkState() == 2 and self.prog.currentText() != ""
+        cangeo = self.checkgeo.checkState() == 2 and (self.fedokrug.currentText() != "")
+        return canprog or cangeo

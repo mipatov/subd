@@ -20,7 +20,7 @@
    <layout class="QGridLayout" name="gridLayout_5">
     <item row="0" column="0">
      <layout class="QGridLayout" name="gridLayout_4">
-      <item row="0" column="2">
+      <item row="0" column="3">
        <widget class="QPushButton" name="pushButton_4">
         <property name="font">
          <font>
@@ -34,6 +34,19 @@
          <string>ЗАКРЫТЬ ТАБЛИЦУ</string>
         </property>
        </widget>
+      </item>
+      <item row="0" column="2">
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item row="0" column="0">
        <widget class="QLabel" name="title">
@@ -50,17 +63,20 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <spacer name="horizontalSpacer_4">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+       <widget class="QLabel" name="filterlabel">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <italic>false</italic>
+         </font>
         </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
+        <property name="text">
+         <string/>
         </property>
-       </spacer>
+        <property name="alignment">
+         <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
@@ -573,21 +589,6 @@
       </item>
       <item row="0" column="4">
        <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="6">
-         <widget class="QToolButton" name="toolButton">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>X</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="5">
          <widget class="QPushButton" name="filterbtn">
           <property name="minimumSize">
@@ -625,6 +626,29 @@
           </property>
          </widget>
         </item>
+        <item row="0" column="4">
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Сортировка по:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="2">
          <widget class="QComboBox" name="sortbox">
           <property name="currentText">
@@ -646,29 +670,6 @@
            </property>
           </item>
          </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Сортировка по:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="4">
-         <spacer name="horizontalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
         </item>
        </layout>
       </item>

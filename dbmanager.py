@@ -63,7 +63,7 @@ def SumPFinInProg():
         dbc.dbcon.commit()
 
 
-def GetTableNir(sort = 0, desc = False):
+def GetTableNir(sort = 0, desc = False, filter = None):
     sorttuple = ('order by pj.Codprog, pj.F',
                  'order by pj.isp',
                  'order by pj.Pfin')
@@ -74,8 +74,15 @@ def GetTableNir(sort = 0, desc = False):
         sortexpr = descsorttuple[sort]
     else:
         sortexpr = sorttuple[sort]
+
+    filterexpr = ""
+
+    if filter :
+        if "prog" in filter.keys():
+            filterexpr += f"and pg.PROG = '{filter['prog']}' "
+
     with dbc.dbcon.cursor() as cur:
-        cur.execute("SELECT pg.PROG, pj.F,  pj.isp, pj.PFIN, pg.FFIN,pj.SROK_N, pj.SROK_K,pj.RUK, pj.GRNTI, pj.CODTYPE,pj.PFIN1,pj.PFIN2,pj.PFIN3,pj.PFIN4,pg.FFIN1,pg.FFIN2,pg.FFIN3,pg.FFIN4, pj.NIR FROM nir.ntp_proj pj, nir.ntp_prog pg where pj.CODPROG = pg.CODPROG "+sortexpr)
+        cur.execute(f"SELECT pg.PROG, pj.F,  pj.isp, pj.PFIN, pg.FFIN,pj.SROK_N, pj.SROK_K,pj.RUK, pj.GRNTI, pj.CODTYPE,pj.PFIN1,pj.PFIN2,pj.PFIN3,pj.PFIN4,pg.FFIN1,pg.FFIN2,pg.FFIN3,pg.FFIN4, pj.NIR FROM nir.ntp_proj pj, nir.ntp_prog pg where pj.CODPROG = pg.CODPROG {filterexpr}  {sortexpr}")
         table = cur.fetchall()
         return table
 
