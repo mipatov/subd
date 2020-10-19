@@ -1,4 +1,5 @@
-# pyuic5 Forms/name.ui -o Forms/name.py
+# pyuic5 gui/Forms/filterform.ui -o gui/Forms/FilterForm.py
+# pyuic5 gui/Forms/addform.ui -o gui/Forms/OneRecordForm.py
 from gui.guimanager import *
 import dbmanager as dbm
 from PyQt5.QtCore import Qt
@@ -24,9 +25,11 @@ class OneRecord(QtWidgets.QDialog, OneRecordForm.Ui_Dialog):
         self.finerror.setHidden(True)
         self.grntierror.setHidden(True)
 
+        self.prog.addItem("")
         self.prog.addItems(dbm.GetProgTuple())
         self.setprojnumtip()
         self.prog.currentIndexChanged.connect(self.setprojnumtip)
+        self.isp.addItem("")
         self.isp.addItems(dbm.GetVuzTuple())
         self.onlyInt = QtGui.QIntValidator()
         self.pfin.setValidator(self.onlyInt)
@@ -67,7 +70,7 @@ class OneRecord(QtWidgets.QDialog, OneRecordForm.Ui_Dialog):
                 correct = False
                 self.errorlabel.setHidden(False)
 
-        if self.NIR.toPlainText() == "":
+        if self.NIR.toPlainText() == "" or self.prog.currentText() == "" or self.isp.currentText() == "" :
             correct = False
             self.errorlabel.setHidden(False)
 
@@ -79,8 +82,10 @@ class OneRecord(QtWidgets.QDialog, OneRecordForm.Ui_Dialog):
             correct = False
             self.grntierror.setHidden(False)
 
+        sk, sn = int(self.srok_k.text()), int(self.srok_n.text())
+
         if correct:
-            if int(self.srok_k.text()) < int(self.srok_n.text()):
+            if sk < sn or not sk in range(2000,2100) or not sn in range(2000,2100):
                 self.dateerror.setHidden(False)
                 correct = False
 
@@ -183,6 +188,9 @@ class RemoveRecord(QtWidgets.QDialog, RemoveForm.Ui_Dialog):
     def removerec(self):
         dbm.RemoveRecord(self.cRec[0],self.cRec[1])
         self.parent.FillTable(dbm.GetTableNir(sort=self.parent.sorttype, desc=self.parent.sortdesc))
+        self.parent.cRec = ("","")
+        self.parent.cRow = -1
         dbm.countNPROJ()
         dbm.SumPFinInProg()
+
         self.close()

@@ -11,8 +11,10 @@ def main():
     app = QtWidgets.QApplication([])
 
     window = MainWindow(app)
-    window.dbref  =db
-    window.show()
+
+
+    window.dbref = db
+    window.showMaximized()
 
     sys.exit(app.exec_())
 

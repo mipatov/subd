@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt
-from gui.Forms import FormWidgetTable, OnlyTableForm,Main, OneRecordForm
+from gui.Forms import OnlyTableForm,Main, OneRecordForm
 from PyQt5 import QtWidgets, QtCore,QtGui
 from gui.tablegui import *
 
@@ -20,6 +20,8 @@ class MainWindow(QtWidgets.QMainWindow, Main.Ui_MainWindow):
         self.vuz.triggered.connect(self.openvuztable)
         self.closeaction.triggered.connect(app.closeAllWindows)
 
+        self.mdi = QtWidgets.QMdiArea()
+        self.setCentralWidget(self.mdi)
 
         # self.windows.append(window)
 
@@ -27,26 +29,32 @@ class MainWindow(QtWidgets.QMainWindow, Main.Ui_MainWindow):
 
 
     def opennirtable(self):
+        self.mdi.closeAllSubWindows()
         nirTable = dbm.GetTableNir()
         window = FuncTable(nirTable, "Данные о НИР")
-        window.show()
-        self.windows.append(window)
+        window.parent = self
+        sub = self.mdi.addSubWindow(window)
+        sub.showMaximized()
+
+        # self.windows.append(window)
 
 
 
     def openprogtable(self):
+        self.mdi.closeAllSubWindows()
         table = dbm.GetProgTable()
         window = OnlyTable(table, "Данные о программах")
-        window.show()
-
-        self.windows.append(window)
-
+        window.parent = self
+        sub = self.mdi.addSubWindow(window)
+        sub.showMaximized()
 
     def openvuztable(self):
+        self.mdi.closeAllSubWindows()
         table = dbm.GetVuzTable()
         window = OnlyTable(table, "Данные о вузах")
-        window.show()
-        self.windows.append(window)
+        window.parent = self
+        sub = self.mdi.addSubWindow(window)
+        sub.showMaximized()
       
 
 

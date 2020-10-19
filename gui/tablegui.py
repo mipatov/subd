@@ -3,13 +3,14 @@ from gui.onerecordgui import *
 from fielddict import *
 import dbmanager as dbm
 from PyQt5.QtCore import Qt
-from gui.Forms import FormWidgetTable, OnlyTableForm,Main
+from gui.Forms import FormTableWidget, OnlyTableForm,FilterForm
 from PyQt5 import QtWidgets, QtCore,QtGui
 # pyuic5 Forms/name.ui -o Forms/name.py
 
 class TableClass():
     cRow = -1
     cRec = ("","")
+    parent = None
 
     def setColortoRow(self,table, rowIndex, color):
         for j in range(table.columnCount()):
@@ -56,8 +57,13 @@ class TableClass():
         self.tableWidget.clicked.connect(self.rowselection)
         self.FillTable(table)
 
+    def closeEvent(self, event):
+        self.parent.mdi.closeAllSubWindows()
 
-class FuncTable(QtWidgets.QMainWindow, FormWidgetTable.Ui_MainWindow,TableClass):
+
+
+
+class FuncTable(QtWidgets.QMainWindow, FormTableWidget.Ui_MainWindow,TableClass):
     sortdesc = False
     sorttype = 0
     dialog = None
@@ -71,24 +77,14 @@ class FuncTable(QtWidgets.QMainWindow, FormWidgetTable.Ui_MainWindow,TableClass)
         self.addbtn.clicked.connect(self.addrec)
         self.editbtn.clicked.connect(self.editrec)
         self.deletebtn.clicked.connect(self.removeRec)
+        self.filterbtn.clicked.connect(self.setFilter)
 
         self.setWindowTitle(name)
         self.SetUpTable(table)
 
-        self.prog.triggered.connect(self.openprogtable)
-        self.vuz.triggered.connect(self.openvuztable)
 
-    def openprogtable(self):
-        table = dbm.GetProgTable()
-        window = OnlyTable(table, "Данные о программах")
-        window.show()
-
-        self.dialog = window
-
-
-    def openvuztable(self):
-        table = dbm.GetVuzTable()
-        window = OnlyTable(table, "Данные о вузах")
+    def setFilter(self):
+        window = Filter(self)
         window.show()
         self.dialog = window
 
@@ -110,8 +106,6 @@ class FuncTable(QtWidgets.QMainWindow, FormWidgetTable.Ui_MainWindow,TableClass)
                 self.selectirow(i)
                 self.tableWidget.scrollToItem(self.tableWidget.item(i,0))
                 return i
-
-
 
 
     def sort(self,i):
@@ -159,5 +153,24 @@ class OnlyTable(QtWidgets.QDialog, OnlyTableForm.Ui_Dialog, TableClass):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle(name)
+        self.title.setText(name)
         self.SetUpTable(table)
-        # self.FillTable(table)
+
+        
+class Filter(QtWidgets.QDialog, FilterForm.Ui_Dialog,):
+    def __init__(self,parent):
+        super().__init__()
+        self.setupUi(self)
+
+        self.applybtn.clicked.connect(self.applyFilter)
+        self.discardbtn.clicked.connect(self.discardFilter)
+
+        self.prog.addItem("")
+        self.prog.addItems(dbm.GetProgTuple())
+
+
+    def applyFilter(self):
+        print("apply")
+
+    def discardFilter(self):
+        print("discard")
