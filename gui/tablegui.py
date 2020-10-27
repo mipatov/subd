@@ -118,7 +118,7 @@ class FuncTable(QtWidgets.QMainWindow, FormTableWidget.Ui_MainWindow,TableClass)
     def sort(self,i):
         self.sorttype = i
 
-        table = dbm.GetTableNir(self.sorttype,self.sortdesc)
+        table = dbm.GetTableNir(self.sorttype,self.sortdesc,self.filter)
         self.FillTable(table)
         if self.cRec[1]!="":
             self.findrec(self.cRec[0],int(self.cRec[1]))
@@ -143,7 +143,7 @@ class FuncTable(QtWidgets.QMainWindow, FormTableWidget.Ui_MainWindow,TableClass)
 
     def togglesort(self):
         self.sortdesc = not self.sortdesc
-        table = dbm.GetTableNir(self.sorttype,self.sortdesc)
+        table = dbm.GetTableNir(self.sorttype,self.sortdesc,self.filter)
         self.FillTable(table)
         if self.cRec[1] != "":
             self.findrec(self.cRec[0],int(self.cRec[1]))
@@ -182,6 +182,11 @@ class Filter(QtWidgets.QDialog, FilterForm.Ui_Dialog,):
         self.prog.addItem("")
         self.prog.addItems(dbm.GetProgTuple())
 
+        self.setupGeofilter()
+
+        self.allowgeocombo = True
+
+
         self.prog.currentTextChanged.connect(self.checkEnableButtons)
         self.checkprog.stateChanged.connect(self.checkEnableButtons)
 
@@ -194,6 +199,106 @@ class Filter(QtWidgets.QDialog, FilterForm.Ui_Dialog,):
 
         if self.canApply():
             self.applybtn.setEnabled(True)
+
+    def setupGeofilter(self):
+        combo = [self.fedokrug,self.subj,self.city,self.vuz]
+        keys = ["region","oblname","city","z2"]
+        self.geodict = dict(zip(keys,combo))
+
+        for cmb in self.geodict.values(): # пустые строки в комбо
+            cmb.addItem("")
+
+
+        self.geoinfo = dbm.GetFullGeoinfo()
+
+        for key,cmb in self.geodict.items():# заполнение без ограничений
+            cmb.addItems(self.geoinfo[key])
+
+
+        self.fedokrug.currentIndexChanged.connect(self.changefedokrug)
+        self.subj.currentIndexChanged.connect(self.changesubj)
+        self.city.currentIndexChanged.connect(self.changecity)
+        self.vuz.currentIndexChanged.connect(self.changevuz)
+        self.checkgeo.stateChanged.connect(self.checkEnableButtons)
+
+    def changefedokrug(self):
+        if not self.allowgeocombo:
+            return
+        self.geoinfo = dbm.GetGeoinfo("region",self.fedokrug.currentText())
+        self.refillGeofilter(0)
+
+
+    def changesubj(self):
+        if not self.allowgeocombo:
+            return
+        self.geoinfo = dbm.GetGeoinfo("oblname",self.subj.currentText())
+        self.refillGeofilter(1)
+
+
+    def changecity(self):
+        if not self.allowgeocombo:
+            return
+        self.geoinfo = dbm.GetGeoinfo("city",self.city.currentText())
+        self.refillGeofilter(2)
+
+
+    def changevuz(self):
+        if not self.allowgeocombo:
+            return
+        self.geoinfo = dbm.GetGeoinfo("z2",self.vuz.currentText())
+        self.refillGeofilter(3)
+
+    def refillGeofilter(self,i):
+        """i - номер комбобокса, который изменен"""
+
+        self.allowgeocombo = False
+        # if self.fedokrug.currentText() !="":
+        print(self.geoinfo)
+
+        fullgeoinfo = dbm.GetFullGeoinfo()
+
+        for cmb in self.geodict.values(): # очистка комбо
+            cmb.clear()
+
+        # for cmb in self.geodict.values(): # пустые строки в комбо
+        #     cmb.addItem("")
+
+        for j in range(4):
+            cmb = list(self.geodict.values())[j]
+            key = list(self.geodict.keys())[j]
+            if j<=i :
+                # cmb.addItem("")
+                cmb.addItems(fullgeoinfo[key])
+                cmb.setCurrentText(list(self.geoinfo[key])[0])
+            else:
+                cmb.addItem("")
+                cmb.addItems(self.geoinfo[key])
+        # self.fedokrug.setCurrentText(list(self.geoinfo["region"])[0])
+        #
+        # self.subj.clear()
+        # self.city.clear()
+        # self.vuz.clear()
+        #
+        # self.subj.addItems(self.geoinfo["oblname"])
+        # self.city.addItems(self.geoinfo["city"])
+        # self.vuz.addItems(self.geoinfo["z2"])
+
+        self.allowgeocombo = True
+
+        self.checkEnableButtons()
+
+    def fillGeofilter(self):
+        # self.fedokrug.clear()
+        # self.subj.clear()
+        # self.city.clear()
+        # self.vuz.clear()
+        pass
+
+
+
+
+
+
 
 
     def applyFilter(self):

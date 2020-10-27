@@ -81,8 +81,15 @@ def GetTableNir(sort = 0, desc = False, filter = None):
         if "prog" in filter.keys():
             filterexpr += f"and pg.PROG = '{filter['prog']}' "
 
+        if "geo" in filter.keys():
+            geofilter = filter['geo']
+            for f in geofilter.keys():
+                filterexpr += f"and pg.{f.upper()} = '{geofilter[f]}' "
+
+
     with dbc.dbcon.cursor() as cur:
-        cur.execute(f"SELECT pg.PROG, pj.F,  pj.isp, pj.PFIN, pg.FFIN,pj.SROK_N, pj.SROK_K,pj.RUK, pj.GRNTI, pj.CODTYPE,pj.PFIN1,pj.PFIN2,pj.PFIN3,pj.PFIN4,pg.FFIN1,pg.FFIN2,pg.FFIN3,pg.FFIN4, pj.NIR FROM nir.ntp_proj pj, nir.ntp_prog pg where pj.CODPROG = pg.CODPROG {filterexpr}  {sortexpr}")
+        cur.execute(f"SELECT pg.PROG, pj.F,  pj.isp, pj.PFIN, pg.FFIN,pj.SROK_N, pj.SROK_K,pj.RUK, pj.GRNTI, pj.CODTYPE,pj.PFIN1,pj.PFIN2,pj.PFIN3,pj.PFIN4,pg.FFIN1,pg.FFIN2,pg.FFIN3,pg.FFIN4, pj.NIR FROM nir.ntp_proj pj, nir.ntp_prog pg"
+                    f" where pj.CODPROG = pg.CODPROG {filterexpr}  {sortexpr}")
         table = cur.fetchall()
         return table
 
@@ -174,10 +181,46 @@ def RemoveRecord(prog,f):
         cur.execute(f"delete from ntp_proj using ntp_proj, ntp_prog  where ntp_prog.prog = '{prog}' and ntp_prog.codprog = ntp_proj.codprog and ntp_proj.f = '{f}'")
         dbc.dbcon.commit()
 
+
 def GetRecord(prog,f):
     with dbc.dbcon.cursor() as cur:
         cur.execute(f"select nj.CODPROG,nj.F,nj.NIR,nj.ISP,nj.CODISP,nj.SROK_N,nj.SROK_K,nj.RUK,nj.RUK2,nj.GRNTI,nj.CODTYPE,nj.PFIN from  nir.ntp_proj nj,nir.ntp_prog ng where ng.prog = '{prog}' and ng.codprog = nj.codprog and nj.f = '{f}'")
         return cur.fetchone()
+
+
+def GetFullGeoinfo():
+    geoinfo = {'region':None,'oblname':None,'city':None,'z2':None}
+
+    for geo in geoinfo:
+        if not geoinfo[geo]:
+            geoinfo[geo] = GetGeoList(geo)
+
+    return geoinfo
+
+
+def GetGeoList(geo, name= None):
+    if name:
+        geoname = f"where {geo.upper()} = {name}"
+    else:
+        geoname = ""
+
+    with dbc.dbcon.cursor() as cur:
+        cur.execute(f"SELECT distinct {geo.upper()} FROM vuz {geoname}")
+        geolist = [(row[geo.upper()]) for row in cur.fetchall()]
+    return list(geolist)
+
+
+def GetGeoinfo(field, name ):
+
+    with dbc.dbcon.cursor() as cur:
+        cur.execute(f"SELECT  region, oblname, city, z2 FROM vuz where {field} = '{name}'")
+        table = cur.fetchall()
+        reg  = {(row["region"]) for row in table}
+        obl = {(row["oblname"]) for row in table}
+        city = {(row["city"]) for row in table}
+        vuz = {(row["z2"]) for row in table}
+        print(table)
+    return {'region':reg,'oblname':obl,'city':city,'z2':vuz}
 
 
 if __name__ == '__main__':
