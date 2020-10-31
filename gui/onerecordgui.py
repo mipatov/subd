@@ -146,6 +146,8 @@ class EditRecord(OneRecord):
 
     def fillform(self):
         table = self.parent.tableWidget
+        if not (table.item(self.cRow, 0)):
+            return
         record = dbm.GetRecord(table.item(self.cRow, 0).text(),table.item(self.cRow, 1).text())
         print(record)
         self.prog.setCurrentText(table.item(self.cRow, 0).text())

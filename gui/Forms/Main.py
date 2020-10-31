@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'Forms/Main.ui'
+# Form implementation generated from reading ui file 'gui/Forms/Main.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.1
 #
@@ -23,8 +23,8 @@ class Ui_MainWindow(object):
         self.menubar.setObjectName("menubar")
         self.tables = QtWidgets.QMenu(self.menubar)
         self.tables.setObjectName("tables")
-        self.analis = QtWidgets.QMenu(self.menubar)
-        self.analis.setObjectName("analis")
+        self.analys = QtWidgets.QMenu(self.menubar)
+        self.analys.setObjectName("analys")
         self.fin = QtWidgets.QMenu(self.menubar)
         self.fin.setObjectName("fin")
         self.help = QtWidgets.QMenu(self.menubar)
@@ -45,12 +45,21 @@ class Ui_MainWindow(object):
         self.vuz.setObjectName("vuz")
         self.closeaction = QtWidgets.QAction(MainWindow)
         self.closeaction.setObjectName("closeaction")
+        self.analys1 = QtWidgets.QAction(MainWindow)
+        self.analys1.setObjectName("analys1")
+        self.analys2 = QtWidgets.QAction(MainWindow)
+        self.analys2.setObjectName("analys2")
+        self.analys3 = QtWidgets.QAction(MainWindow)
+        self.analys3.setObjectName("analys3")
         self.tables.addAction(self.nir)
         self.tables.addAction(self.prog)
         self.tables.addAction(self.vuz)
+        self.analys.addAction(self.analys1)
+        self.analys.addAction(self.analys2)
+        self.analys.addAction(self.analys3)
         self.closebtn.addAction(self.closeaction)
         self.menubar.addAction(self.tables.menuAction())
-        self.menubar.addAction(self.analis.menuAction())
+        self.menubar.addAction(self.analys.menuAction())
         self.menubar.addAction(self.fin.menuAction())
         self.menubar.addAction(self.help.menuAction())
         self.menubar.addAction(self.about.menuAction())
@@ -63,7 +72,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Сопровождение НТП"))
         self.tables.setTitle(_translate("MainWindow", " Данные"))
-        self.analis.setTitle(_translate("MainWindow", "Анализ данных"))
+        self.analys.setTitle(_translate("MainWindow", "Анализ данных"))
         self.fin.setTitle(_translate("MainWindow", "Финансирование"))
         self.help.setTitle(_translate("MainWindow", "Справка"))
         self.about.setTitle(_translate("MainWindow", "О программе"))
@@ -72,3 +81,7 @@ class Ui_MainWindow(object):
         self.prog.setText(_translate("MainWindow", "Таблица с НТП"))
         self.vuz.setText(_translate("MainWindow", "Данные о вузах"))
         self.closeaction.setText(_translate("MainWindow", "Закрыть"))
+        self.analys1.setText(_translate("MainWindow", "Распределение НИР по вузам"))
+        self.analys2.setText(_translate("MainWindow", "Распределение по НТП"))
+        self.analys3.setText(_translate("MainWindow", "Характер НИР\n"
+""))

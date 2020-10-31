@@ -83,13 +83,15 @@ def GetTableNir(sort = 0, desc = False, filter = None):
 
         if "geo" in filter.keys():
             geofilter = filter['geo']
-            for f in geofilter.keys():
-                filterexpr += f"and pg.{f.upper()} = '{geofilter[f]}' "
+            for f,n in geofilter.items():
+                filterexpr += f"and trim(v.{f}) = trim('{n}') "
 
 
     with dbc.dbcon.cursor() as cur:
-        cur.execute(f"SELECT pg.PROG, pj.F,  pj.isp, pj.PFIN, pg.FFIN,pj.SROK_N, pj.SROK_K,pj.RUK, pj.GRNTI, pj.CODTYPE,pj.PFIN1,pj.PFIN2,pj.PFIN3,pj.PFIN4,pg.FFIN1,pg.FFIN2,pg.FFIN3,pg.FFIN4, pj.NIR FROM nir.ntp_proj pj, nir.ntp_prog pg"
-                    f" where pj.CODPROG = pg.CODPROG {filterexpr}  {sortexpr}")
+        query = f"""SELECT pg.PROG, pj.F,  pj.isp, pj.PFIN, pg.FFIN,pj.SROK_N, pj.SROK_K,pj.RUK, pj.GRNTI, pj.CODTYPE,pj.PFIN1,pj.PFIN2,pj.PFIN3,pj.PFIN4,pg.FFIN1,pg.FFIN2,pg.FFIN3,pg.FFIN4, pj.NIR FROM nir.ntp_proj pj, nir.ntp_prog pg, vuz v 
+where pj.CODPROG = pg.CODPROG and trim(v.codvuz) = trim(pj.CODISP) {filterexpr}  {sortexpr}"""
+        # print(query)
+        cur.execute(query)
         table = cur.fetchall()
         return table
 
@@ -99,7 +101,7 @@ def GetProgTable():
         table = cur.fetchall()
 
         cur.execute(f"select codprog from nir.ntp_prog where prog = 'Экраноплан'")
-        print(cur.fetchone()["codprog"])
+        # print(cur.fetchone()["codprog"])
         # cprog =
         return table
 
@@ -142,7 +144,7 @@ def AddRecord(prog,f,nir,isp,srn,srk,ruk,ruk2,grnti,ctype,pfin):
         cprog = row["codprog"]
         cur.execute(f"select codvuz from nir.vuz where z2 = '{isp}'")
         cisp = cur.fetchone()["codvuz"].strip()
-        print(cisp)
+        # print(cisp)
         pfin = int(pfin)
         pfin123 = round(pfin/4)
         pfin4 = pfin - 3 * round(pfin / 4)
@@ -210,7 +212,7 @@ def GetGeoList(geo, name= None):
     return list(geolist)
 
 
-def GetGeoinfo(field, name ):
+def GetGeoinfo(field, name):
 
     with dbc.dbcon.cursor() as cur:
         cur.execute(f"SELECT  region, oblname, city, z2 FROM vuz where {field} = '{name}'")
@@ -219,13 +221,27 @@ def GetGeoinfo(field, name ):
         obl = {(row["oblname"]) for row in table}
         city = {(row["city"]) for row in table}
         vuz = {(row["z2"]) for row in table}
-        print(table)
+
     return {'region':reg,'oblname':obl,'city':city,'z2':vuz}
+
+def GetAnalisTable(i):
+    querys = [
+        "SELECT CODTYPE Тип, COUNT(F) Количество, SUM(PFIN) Финансирование FROM ntp_proj GROUP BY CODTYPE"
+    ]
+    if i >= len(querys):
+        print("wrong query number")
+        return
+
+    with dbc.dbcon.cursor() as cur:
+        cur.execute(querys[i])
+        table = cur.fetchall()
+
+        return table
 
 
 if __name__ == '__main__':
 
     db = openDatabase("config.ini")
 
-    print(db)
+    # print(db)
 
