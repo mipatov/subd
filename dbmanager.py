@@ -75,17 +75,7 @@ def GetTableNir(sort = 0, desc = False, filter = None):
     else:
         sortexpr = sorttuple[sort]
 
-    filterexpr = ""
-
-    if filter :
-        if "prog" in filter.keys():
-            filterexpr += f"and pg.PROG = '{filter['prog']}' "
-
-        if "geo" in filter.keys():
-            geofilter = filter['geo']
-            for f,n in geofilter.items():
-                filterexpr += f"and trim(v.{f}) = trim('{n}') "
-
+    filterexpr = getFilter(filter,"pg","v")
 
     with dbc.dbcon.cursor() as cur:
         query = f"""SELECT pg.PROG, pj.F,  pj.isp, pj.PFIN, pg.FFIN,pj.SROK_N, pj.SROK_K,pj.RUK, pj.GRNTI, pj.CODTYPE,pj.PFIN1,pj.PFIN2,pj.PFIN3,pj.PFIN4,pg.FFIN1,pg.FFIN2,pg.FFIN3,pg.FFIN4, pj.NIR FROM nir.ntp_proj pj, nir.ntp_prog pg, vuz v 
@@ -224,9 +214,16 @@ def GetGeoinfo(field, name):
 
     return {'region':reg,'oblname':obl,'city':city,'z2':vuz}
 
-def GetAnalisTable(i):
+def GetAnalisTable(i,filter = {}):
+
+    # filterexpr=""
+    #
+    # if filter:
+    filterexpr = getFilter(filter,"pg","v")
+
     querys = [
-        "SELECT CODTYPE Тип, COUNT(F) Количество, SUM(PFIN) Финансирование FROM ntp_proj GROUP BY CODTYPE"
+        f"""SELECT pj.CODTYPE Тип, COUNT(pj.F) Количество, SUM(pj.PFIN) Финансирование FROM nir.ntp_proj pj, nir.ntp_prog pg, vuz v 
+where pj.CODPROG = pg.CODPROG and trim(v.codvuz) = trim(pj.CODISP) {filterexpr} GROUP BY pj.CODTYPE"""
     ]
     if i >= len(querys):
         print("wrong query number")
@@ -238,6 +235,20 @@ def GetAnalisTable(i):
 
         return table
 
+
+def getFilter(filter,ntp_prog = "ntp_prog",vuz = "vuz"):
+    filterexpr = ""
+
+    if filter:
+        if "prog" in filter.keys():
+            filterexpr += f"and {ntp_prog}.PROG = '{filter['prog']}' "
+
+        if "geo" in filter.keys():
+            geofilter = filter['geo']
+            for f,n in geofilter.items():
+                filterexpr += f"and trim({vuz}.{f}) = trim('{n}') "
+
+    return filterexpr
 
 if __name__ == '__main__':
 
