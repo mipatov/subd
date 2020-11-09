@@ -1,7 +1,3 @@
-from gui.guimanager import *
-from gui.onerecordgui import *
-from gui.onerecordgui import *
-from fielddict import *
 import dbmanager as dbm
 from PyQt5.QtCore import Qt
 from gui.Forms import FormTableWidget, OnlyTableForm,FilterForm

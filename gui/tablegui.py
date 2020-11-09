@@ -1,12 +1,13 @@
 from gui.guimanager import *
 from gui.onerecordgui import *
-from gui.tableutilsgui import *
+from gui.filtergui import *
 from fielddict import *
 import dbmanager as dbm
 from PyQt5.QtCore import Qt
-from gui.Forms import FormTableWidget, OnlyTableForm,FilterForm
+from gui.Forms import FormTableWidget, OnlyTableForm
 from PyQt5 import QtWidgets, QtCore,QtGui
 # pyuic5 Forms/name.ui -o Forms/name.py
+# pyuic5 gui/Forms/OnlyTable.ui -o gui/Forms/OnlyTableForm.py
 
 class TableClass():
     cRow = -1
@@ -161,23 +162,35 @@ class FuncTable(QtWidgets.QMainWindow, FormTableWidget.Ui_MainWindow,TableClass)
             self.sortbtn.setText("↓")
 
     def setupanalys(self):
-        # self.parent.analys1.triggered.connect(self.opennirtable)
-        # self.parent.analys2.triggered.connect(self.openprogtable)
+        self.wparent.analys1.triggered.connect(self.openanalys1)
+        self.wparent.analys2.triggered.connect(self.openanalys2)
         self.wparent.analys3.triggered.connect(self.openanalys3)
 
-        self.wparent.analys1.setEnabled(False)
-        self.wparent.analys2.setEnabled(False)
+        self.wparent.analys1.setEnabled(True)
+        self.wparent.analys2.setEnabled(True)
         self.wparent.analys3.setEnabled(True)
 
+    def openanalys1(self):
+        table = dbm.GetAnalisTable(0, self.filter)
+        if table == -1: return
+
+        self.openAnalysTable(table, self.wparent.analys1.text(), self.filterlabel.text())
+
+    def openanalys2(self):
+        table = dbm.GetAnalisTable(1, self.filter)
+        if table == -1: return
+
+        self.openAnalysTable(table, self.wparent.analys2.text(), self.filterlabel.text())
+
     def openanalys3(self):
-        fulltype = {"Ф":"Фундаментальное исследование","П":"Прикладное исседование","Р":"Экспериментальная разработка"}
-        table = dbm.GetAnalisTable(0,self.filter)
-        for row in table:
-            row["Тип"] = fulltype[row["Тип"]]
+        table = dbm.GetAnalisTable(2,self.filter)
+        if table == -1 :return
+        self.openAnalysTable(table,self.wparent.analys3.text(),self.filterlabel.text())
 
-        print(self.filterlabel.text()+" отчет")
 
-        window = OnlyTable(table, self.wparent.analys3.text(),self)
+
+    def openAnalysTable(self,table,name,filtertext):
+        window = OnlyTable(table,name,self,True,filtertext)
         window.tableWidget.resizeColumnsToContents()
         window.show()
 
@@ -195,12 +208,24 @@ class FuncTable(QtWidgets.QMainWindow, FormTableWidget.Ui_MainWindow,TableClass)
 
 
 class OnlyTable(QtWidgets.QDialog, OnlyTableForm.Ui_Dialog, TableClass):
-    def __init__(self, table,name,wparent = None):
+    def __init__(self, table,name,wparent = None,analys = False,filtertext = ""):
         super().__init__()
         self.setupUi(self)
         self.wparent = wparent
         self.setWindowTitle(name)
         self.title.setText(name)
         self.SetUpTable(table)
+
+        if not analys:
+            self.filterlabel.hide()
+            self.savebtn.hide()
+        elif not filtertext:
+            self.filterlabel.hide()
+        else:
+            self.filterlabel.setText(filtertext)
+
+
+
+        # self.savebtn.show()
 
         

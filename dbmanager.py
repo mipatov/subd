@@ -216,24 +216,95 @@ def GetGeoinfo(field, name):
 
 def GetAnalisTable(i,filter = {}):
 
-    # filterexpr=""
-    #
-    # if filter:
     filterexpr = getFilter(filter,"pg","v")
 
     querys = [
-        f"""SELECT pj.CODTYPE Тип, COUNT(pj.F) Количество, SUM(pj.PFIN) Финансирование FROM nir.ntp_proj pj, nir.ntp_prog pg, vuz v 
-where pj.CODPROG = pg.CODPROG and trim(v.codvuz) = trim(pj.CODISP) {filterexpr} GROUP BY pj.CODTYPE"""
+            f"""SELECT v.codvuz, v.z2, "NPROG", COUNT(pj.F) NPROJ, SUM(pj.PFIN) PFIN FROM ntp_proj pj, ntp_prog pg, vuz v 
+WHERE pj.CODPROG = pg.CODPROG and trim(v.codvuz) = trim(pj.CODISP) {filterexpr}  GROUP BY v.codvuz ORDER BY v.codvuz""",
+            f"""SELECT pg.CODPROG, pg.PROG, count(*) NPROJ, sum(pj.PFIN) PFIN, "NVUZ" FROM ntp_proj pj, ntp_prog pg, vuz v 
+WHERE pj.CODPROG = pg.CODPROG and trim(v.codvuz) = trim(pj.CODISP) {filterexpr} GROUP BY pg.CODPROG order by pg.CODPROG""",
+            f"""SELECT pj.CODTYPE, COUNT(pj.F) NPROJ, SUM(pj.PFIN) PFIN FROM ntp_proj pj, ntp_prog pg, vuz v 
+    where pj.CODPROG = pg.CODPROG and trim(v.codvuz) = trim(pj.CODISP) {filterexpr} GROUP BY pj.CODTYPE"""
     ]
+
+
     if i >= len(querys):
         print("wrong query number")
-        return
+        return -1
 
     with dbc.dbcon.cursor() as cur:
         cur.execute(querys[i])
         table = cur.fetchall()
+        if i == 0:
+            col = countVuzProg("ISP",filterexpr)
+            table = replaceColumn(table,col,'z2','NPROG')
+
+        if i == 1:
+            col = countVuzProg("PROG",filterexpr)
+            table = replaceColumn(table,col,'CODPROG','NVUZ')
+
+        if i == 2:
+            fulltype = {"Ф": "Фундаментальное исследование",
+                        "П": "Прикладное исседование",
+                        "Р": "Экспериментальная разработка"}
+            for row in table:
+                row["CODTYPE"] = fulltype[row["CODTYPE"]]
+
+        empty = ["CODPROG","codvuz","NVUZ","NPROG"]
+        vsego = ['z2','PROG','CODTYPE']
+        itog = dict(zip(table[0],[0,]*len(table[0])))
+
+        for row in table:
+            for key,val in row.items():
+                if key not in empty+vsego:
+                    itog[key]+=val
+
+        for key in itog:
+            if key in empty:
+                itog[key] = ""
+                continue
+            if key in vsego:
+                itog[key] = "Всего"
+                continue
+        table.append(itog)
+        print(itog)
 
         return table
+
+
+def replaceColumn(table,columngroop,keyname,valname,):
+    for row in table:
+        for key, val in columngroop.items():
+            if row[keyname] == key:
+                row[valname] = val
+                columngroop.pop(key)
+                break
+    return table
+
+def countVuzProg(keycolumn, filter=""):
+    columns = ["ISP", "PROG"]
+    if keycolumn not in columns:
+        return -1
+    subquery = f"""SELECT distinct pj.ISP, pj.CODPROG PROG FROM ntp_proj pj, ntp_prog pg, vuz v 
+WHERE trim(v.codvuz)=trim(pj.CODISP) and pg.CODPROG=pj.CODPROG {filter}"""
+
+    with dbc.dbcon.cursor() as cur:
+        cur.execute(subquery)
+        table = cur.fetchall()
+
+        groop = {}
+        for row in table:
+            key = row[keycolumn]
+
+            if key not in groop.keys():
+                groop[key] = 0
+
+            groop[key]+=1
+
+        return groop
+
+
+
 
 
 def getFilter(filter,ntp_prog = "ntp_prog",vuz = "vuz"):
