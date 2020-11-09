@@ -83,5 +83,4 @@ class Ui_MainWindow(object):
         self.closeaction.setText(_translate("MainWindow", "Закрыть"))
         self.analys1.setText(_translate("MainWindow", "Распределение НИР по вузам"))
         self.analys2.setText(_translate("MainWindow", "Распределение по НТП"))
-        self.analys3.setText(_translate("MainWindow", "Характер НИР\n"
-""))
+        self.analys3.setText(_translate("MainWindow", "Характер НИР"))

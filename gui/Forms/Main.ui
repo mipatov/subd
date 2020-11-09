@@ -100,8 +100,7 @@
   </action>
   <action name="analys3">
    <property name="text">
-    <string>Характер НИР
-</string>
+    <string>Характер НИР</string>
    </property>
   </action>
  </widget>

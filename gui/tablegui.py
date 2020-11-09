@@ -9,6 +9,7 @@ from gui.Forms import FormTableWidget, OnlyTableForm
 from PyQt5 import QtWidgets, QtCore,QtGui
 # pyuic5 Forms/name.ui -o Forms/name.py
 # pyuic5 gui/Forms/OnlyTable.ui -o gui/Forms/OnlyTableForm.py
+# pyuic5 gui/Forms/Main.ui -o gui/Forms/Main.py
 
 class TableClass():
     cRow = -1
@@ -74,12 +75,6 @@ class TableClass():
 
 
 class FuncTable(QtWidgets.QMainWindow, FormTableWidget.Ui_MainWindow,TableClass):
-    # sortdesc = False
-    # sorttype = 0
-    # filter = {}
-    # dialog = None
-
-
     def __init__(self, table, name,wparent = None):
         super().__init__()
         self.setupUi(self)

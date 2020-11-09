@@ -235,12 +235,13 @@ WHERE pj.CODPROG = pg.CODPROG and trim(v.codvuz) = trim(pj.CODISP) {filterexpr} 
     with dbc.dbcon.cursor() as cur:
         cur.execute(querys[i])
         table = cur.fetchall()
+        cnt = {}
         if i == 0:
-            col = countVuzProg("ISP",filterexpr)
+            col, cnt = groopVuzProg("ISP",filterexpr)
             table = replaceColumn(table,col,'z2','NPROG')
 
         if i == 1:
-            col = countVuzProg("PROG",filterexpr)
+            col, cnt = groopVuzProg("CODPROG",filterexpr)
             table = replaceColumn(table,col,'CODPROG','NVUZ')
 
         if i == 2:
@@ -250,14 +251,14 @@ WHERE pj.CODPROG = pg.CODPROG and trim(v.codvuz) = trim(pj.CODISP) {filterexpr} 
             for row in table:
                 row["CODTYPE"] = fulltype[row["CODTYPE"]]
 
-        empty = ["CODPROG","codvuz","NVUZ","NPROG"]
+        empty = ["CODPROG","codvuz"]
         vsego = ['z2','PROG','CODTYPE']
         itog = dict(zip(table[0],[0,]*len(table[0])))
 
         for row in table:
             for key,val in row.items():
                 if key not in empty+vsego:
-                    itog[key]+=val
+                    itog[key] += val
 
         for key in itog:
             if key in empty:
@@ -266,6 +267,10 @@ WHERE pj.CODPROG = pg.CODPROG and trim(v.codvuz) = trim(pj.CODISP) {filterexpr} 
             if key in vsego:
                 itog[key] = "Всего"
                 continue
+            if key in cnt.keys():
+                itog[key] = cnt[key]
+                continue
+
         table.append(itog)
 
 
@@ -281,15 +286,29 @@ def replaceColumn(table,columngroop,keyname,valname,):
                 break
     return table
 
-def countVuzProg(keycolumn, filter=""):
-    columns = ["ISP", "PROG"]
+
+def groopVuzProg(keycolumn, filter=""):
+    """
+        Группирует либо программы по вузом, либо вузы по программам. Считает сколько всего уникальных вузов/программ.
+            keycolumn -- "ISP"/"CODPROG" -- по чему группировать
+            filter -- выдражение для фильтрации
+    """
+    columns = ["ISP", "CODPROG"]
+    cnttitle = ["NVUZ", "NPROG"]
     if keycolumn not in columns:
         return -1
-    subquery = f"""SELECT distinct pj.ISP, pj.CODPROG PROG FROM ntp_proj pj, ntp_prog pg, vuz v 
-WHERE trim(v.codvuz)=trim(pj.CODISP) and pg.CODPROG=pj.CODPROG {filter}"""
+
+    j = 1 - columns.index(keycolumn)
+
+    subquery = (
+        f"""SELECT distinct pj.ISP, pj.CODPROG FROM ntp_proj pj, ntp_prog pg, vuz v 
+    WHERE trim(v.codvuz)=trim(pj.CODISP) and pg.CODPROG=pj.CODPROG {filter}""",
+        f"""SELECT distinct pj.{columns[j]} FROM ntp_proj pj, ntp_prog pg, vuz v 
+    WHERE trim(v.codvuz)=trim(pj.CODISP) and pg.CODPROG=pj.CODPROG {filter}"""
+    )
 
     with dbc.dbcon.cursor() as cur:
-        cur.execute(subquery)
+        cur.execute(subquery[0])
         table = cur.fetchall()
 
         groop = {}
@@ -299,12 +318,12 @@ WHERE trim(v.codvuz)=trim(pj.CODISP) and pg.CODPROG=pj.CODPROG {filter}"""
             if key not in groop.keys():
                 groop[key] = 0
 
-            groop[key]+=1
+            groop[key] += 1
 
-        return groop
+        cur.execute(subquery[1])
+        cnt = {cnttitle[j]:len(cur.fetchall())}
 
-
-
+        return groop, cnt
 
 
 def getFilter(filter,ntp_prog = "ntp_prog",vuz = "vuz"):
@@ -325,5 +344,5 @@ if __name__ == '__main__':
 
     db = openDatabase("config.ini")
 
-    # print(db)
+
 
