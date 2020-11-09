@@ -2,6 +2,7 @@ from gui.guimanager import *
 from gui.onerecordgui import *
 from gui.filtergui import *
 from fielddict import *
+from reportmanager import *
 import dbmanager as dbm
 from PyQt5.QtCore import Qt
 from gui.Forms import FormTableWidget, OnlyTableForm
@@ -215,6 +216,7 @@ class OnlyTable(QtWidgets.QDialog, OnlyTableForm.Ui_Dialog, TableClass):
         self.setWindowTitle(name)
         self.title.setText(name)
         self.SetUpTable(table)
+        self.tablesrc = table
 
         if not analys:
             self.filterlabel.hide()
@@ -224,8 +226,11 @@ class OnlyTable(QtWidgets.QDialog, OnlyTableForm.Ui_Dialog, TableClass):
         else:
             self.filterlabel.setText(filtertext)
 
+        self.savebtn.clicked.connect(self.doreport)
 
 
-        # self.savebtn.show()
+    def doreport(self):
+        mes = report(self.windowTitle(),self.filterlabel.text(),self.tablesrc)
+        self.wparent.statusBar().showMessage(f"Отчет {mes} создан")
 
         

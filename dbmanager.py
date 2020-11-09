@@ -267,7 +267,7 @@ WHERE pj.CODPROG = pg.CODPROG and trim(v.codvuz) = trim(pj.CODISP) {filterexpr} 
                 itog[key] = "Всего"
                 continue
         table.append(itog)
-        print(itog)
+
 
         return table
 
