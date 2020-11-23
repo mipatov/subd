@@ -340,6 +340,15 @@ def getFilter(filter,ntp_prog = "ntp_prog",vuz = "vuz"):
 
     return filterexpr
 
+def getSumFin():
+
+    with dbc.dbcon.cursor() as cur:
+        cur.execute(f"SELECT  sum(pfin) pfin,sum(ffin) ffin FROM ntp_proj")
+        fin = cur.fetchone()
+
+
+    return fin
+
 if __name__ == '__main__':
 
     db = openDatabase("config.ini")

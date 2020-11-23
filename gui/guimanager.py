@@ -1,14 +1,15 @@
 from PyQt5.QtCore import Qt
-from gui.Forms import OnlyTableForm,Main, OneRecordForm
+from gui.Forms import OnlyTableForm,Main, OrderForm
 from PyQt5 import QtWidgets, QtCore,QtGui
 from gui.tablegui import *
+from gui.ordergui import *
 
 import dbmanager as dbm
 # pyuic5 gui/Forms/RemoveForm.ui -o gui/Forms/RemoveForm.py
 # pyuic5 gui/Forms/FormTable.ui -o gui/Forms/FormTableWidget.py
 
 class MainWindow(QtWidgets.QMainWindow, Main.Ui_MainWindow):
-    windows = []
+
 
     def __init__(self, app):
         super().__init__()
@@ -18,7 +19,9 @@ class MainWindow(QtWidgets.QMainWindow, Main.Ui_MainWindow):
         self.nir.triggered.connect(self.opennirtable)
         self.prog.triggered.connect(self.openprogtable)
         self.vuz.triggered.connect(self.openvuztable)
-        self.closeaction.triggered.connect(app.closeAllWindows)
+        self.closebtn.triggered.connect(app.closeAllWindows)
+        self.orderbtn.triggered.connect(self.openorderform)
+
 
         # self.analys1.triggered.connect(self.opennirtable)
         # self.analys2.triggered.connect(self.openprogtable)
@@ -61,7 +64,10 @@ class MainWindow(QtWidgets.QMainWindow, Main.Ui_MainWindow):
         sub = self.mdi.addSubWindow(window)
         sub.showMaximized()
 
-#         GetAnalisTable
+    def openorderform(self):
+        window = Order(self)
+        window.show()
+        self.dialog = window
 
 
 
