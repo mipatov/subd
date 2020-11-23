@@ -2,7 +2,7 @@ import docx
 from fielddict import *
 from datetime import datetime
 
-def report(title,filter,tabsrc):
+def report(title,filter,tabsrc,path = ''):
     doc = docx.Document()
 
     doc.add_heading(title, 0)
@@ -41,7 +41,7 @@ def report(title,filter,tabsrc):
     date_time = now.strftime("%d-%m-%Y %H.%M.%S")
 
     doc.add_paragraph(f'Создан: {date_time}')
-    filename = f'{title} {date_time}.docx'
+    filename = f'{path}/{title} {date_time}.docx'
     doc.save(filename)
 
     return filename

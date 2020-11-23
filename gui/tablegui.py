@@ -8,6 +8,7 @@ from PyQt5.QtCore import Qt
 from gui.Forms import FormTableWidget, OnlyTableForm
 from PyQt5 import QtWidgets, QtCore,QtGui
 # pyuic5 Forms/name.ui -o Forms/name.py
+# pyuic5 gui/Forms/orderform.ui -o gui/Forms/OrderForm.py
 # pyuic5 gui/Forms/OnlyTable.ui -o gui/Forms/OnlyTableForm.py
 # pyuic5 gui/Forms/Main.ui -o gui/Forms/Main.py
 
@@ -67,7 +68,7 @@ class TableClass():
         self.FillTable(table)
 
     def closeEvent(self, event):
-        print(dir(self.wparent))
+    
         if "mdi" in dir(self.wparent):
             self.wparent.mdi.closeAllSubWindows()
 
@@ -225,7 +226,8 @@ class OnlyTable(QtWidgets.QDialog, OnlyTableForm.Ui_Dialog, TableClass):
 
 
     def doreport(self):
-        mes = report(self.windowTitle(),self.filterlabel.text(),self.tablesrc)
-        self.wparent.statusBar().showMessage(f"Отчет {mes} создан")
+        path = QtWidgets.QFileDialog.getExistingDirectory()
+        mes = report(self.windowTitle(),self.filterlabel.text(),self.tablesrc,path)
+        self.wparent.statusBar().showMessage(f"Отчет сохранен в {mes}")
 
         
