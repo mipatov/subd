@@ -62,6 +62,17 @@ def SumPFinInProg():
             cur.execute(q)
         dbc.dbcon.commit()
 
+def SumFFinInProg():
+    with dbc.dbcon.cursor() as cur:
+        cur.execute("select codprog ,sum(FFIN) FFIN,sum(FFIN1) FFIN1,sum(FFIN2) FFIN2,sum(FFIN3) FFIN3,sum(FFIN4) FFIN4 from nir.ntp_proj Group by ntp_proj.codprog")
+        ntp_prog_FFIN_sum = cur.fetchall()
+
+        cur.execute("SET SQL_SAFE_UPDATES = 0")
+        for row in ntp_prog_FFIN_sum:
+            q = "UPDATE ntp_prog SET FFIN = {},FFIN1 = {},FFIN2 = {},FFIN3 = {},FFIN4 = {} WHERE TRIM(codprog) = {}".format(row['FFIN'],row['FFIN1'],row['FFIN2'],row['FFIN3'],row['FFIN4'], row['codprog'])
+            cur.execute(q)
+        dbc.dbcon.commit()
+
 
 def GetTableNir(sort = 0, desc = False, filter = None):
     sorttuple = ('order by pj.Codprog, pj.F',
@@ -78,7 +89,7 @@ def GetTableNir(sort = 0, desc = False, filter = None):
     filterexpr = getFilter(filter,"pg","v")
 
     with dbc.dbcon.cursor() as cur:
-        query = f"""SELECT pg.PROG, pj.F,  pj.isp, pj.PFIN, pg.FFIN,pj.SROK_N, pj.SROK_K,pj.RUK, pj.GRNTI, pj.CODTYPE,pj.PFIN1,pj.PFIN2,pj.PFIN3,pj.PFIN4,pg.FFIN1,pg.FFIN2,pg.FFIN3,pg.FFIN4, pj.NIR FROM nir.ntp_proj pj, nir.ntp_prog pg, vuz v 
+        query = f"""SELECT pg.PROG, pj.F,  pj.isp, pj.PFIN, pj.FFIN,pj.SROK_N, pj.SROK_K,pj.RUK, pj.GRNTI, pj.CODTYPE,pj.PFIN1,pj.PFIN2,pj.PFIN3,pj.PFIN4,pj.FFIN1,pj.FFIN2,pj.FFIN3,pj.FFIN4, pj.NIR FROM nir.ntp_proj pj, nir.ntp_prog pg, vuz v 
 where pj.CODPROG = pg.CODPROG and trim(v.codvuz) = trim(pj.CODISP) {filterexpr}  {sortexpr}"""
         # print(query)
         cur.execute(query)
@@ -355,6 +366,15 @@ def NirVuzFinDistribute(sumpfin,orderfin):
         cur.execute(f"SELECT isp, sum(round(pfin/{sumpfin}*{orderfin})) ffin FROM ntp_proj group by isp")
         ffpintable['vuz'] = cur.fetchall()
     return ffpintable
+
+def AddFFinToNir(fintable,nquart):
+    with dbc.dbcon.cursor() as cur:
+        for row in fintable:
+            q = f"UPDATE ntp_proj SET FFIN = FFIN + {row['ffin']}, FFIN{nquart} = FFIN{nquart} + {row['ffin']} WHERE TRIM(codprog) = {row['codprog']} and TRIM(F) = {row['f']}"
+
+            cur.execute(q)
+
+        dbc.dbcon.commit()
 
 
 

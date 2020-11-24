@@ -210,5 +210,5 @@ class Ui_Dialog(object):
         self.label_7.setText(_translate("Dialog", "Сумма: "))
         self.countbtn.setText(_translate("Dialog", "Раcсчитать"))
         self.acceptbtn.setText(_translate("Dialog", "Утвердить"))
-        self.discard.setText(_translate("Dialog", "Отменить"))
+        self.discard.setText(_translate("Dialog", " Закрыть"))
         self.label_6.setText(_translate("Dialog", "Распоряжение:"))

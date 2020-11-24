@@ -22,6 +22,8 @@ class MainWindow(QtWidgets.QMainWindow, Main.Ui_MainWindow):
         self.closebtn.triggered.connect(app.closeAllWindows)
         self.orderbtn.triggered.connect(self.openorderform)
 
+        # self.statusbar.showMessage("")
+
 
         # self.analys1.triggered.connect(self.opennirtable)
         # self.analys2.triggered.connect(self.openprogtable)
@@ -65,9 +67,11 @@ class MainWindow(QtWidgets.QMainWindow, Main.Ui_MainWindow):
         sub.showMaximized()
 
     def openorderform(self):
+        self.mdi.closeAllSubWindows()
         window = Order(self)
-        window.show()
-        self.dialog = window
+        # window.show()
+        sub = self.mdi.addSubWindow(window)
+        sub.showMaximized()
 
 
 

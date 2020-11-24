@@ -10,7 +10,7 @@ class Order(QtWidgets.QDialog, OrderForm.Ui_Dialog,):
         self.setupUi(self)
         self.parent = parent
         self.currentordersum = 0
-        self.currentquartal = ''
+        self.currentquartal = [0,'']
 
         self.setWindowTitle("Финансирование НИР")
         self.countcurrentfin()
@@ -31,6 +31,9 @@ class Order(QtWidgets.QDialog, OrderForm.Ui_Dialog,):
         self.sumfin.textChanged.connect(self.changesumfin)
         self.percentfin.textChanged.connect(self.changepercentfin)
         self.quartcombo.currentIndexChanged.connect(self.checkcorrectfill)
+
+
+
 
     def countcurrentfin(self):
         fin = dbm.getSumFin()
@@ -60,19 +63,20 @@ class Order(QtWidgets.QDialog, OrderForm.Ui_Dialog,):
     def recountsumpercent(self,field):
         if field =="sum":
             text = self.sumfin.text()
-            if text == "":
-                self.percentfin.setText('')
+            try:
+                sum = float(text)
+            except:
                 return
 
-            sum = float(text)
             percent = sum/float(self.fin['pfin'])*100
             self.percentfin.setText(str(round(percent,5)))
         elif field =="percent":
             text = self.percentfin.text()
-            if text == "":
-                self.sumfin.setText('')
+            try:
+                percent = float(text)
+            except:
                 return
-            percent = float(text)
+
             sum = percent/100*float(self.fin['pfin'])
             self.sumfin.setText(str(round(sum,5)))
         else:
@@ -87,7 +91,11 @@ class Order(QtWidgets.QDialog, OrderForm.Ui_Dialog,):
     def checkcorrectfill(self):
         correct = self.quartcombo.currentIndex()>0 and self.sumfin.text()!="" and self.percentfin.text()!=""
         self.countbtn.setEnabled(correct)
-        self.currentquartal = self.quartcombo.currentText()
+        self.currentquartal[0] = self.quartcombo.currentIndex()
+        self.currentquartal[1] = self.quartcombo.currentText()
+
+        self.acceptbtn.setEnabled(False)
+        self.tableWidget.setEnabled(False)
 
     def countorder(self):
         self.ffintables = dbm.NirVuzFinDistribute(float(self.fin['pfin']),self.currentordersum)
@@ -95,15 +103,22 @@ class Order(QtWidgets.QDialog, OrderForm.Ui_Dialog,):
         self.acceptbtn.setEnabled(True)
         self.FillTable(self.ffintables['vuz'])
 
+        self.countbtn.setEnabled(False)
+
 
     def acceptorder(self):
+        dbm.AddFFinToNir(self.ffintables['nir'],self.currentquartal[0])
+        dbm.SumFFinInProg()
+        self.countcurrentfin()
+        path = QtWidgets.QFileDialog.getExistingDirectory()
+        self.parent.statusbar.showMessage(f"Распоряжение сохранено в {path}")
         print("apply fin order")
 
 
     def FillTable(self, table):
         n, m = 2, len(table)
         self.tableWidget.setColumnCount(n)
-        self.tableWidget.setHorizontalHeaderLabels(("Вуз",f"Фин. за {self.currentquartal}"))
+        self.tableWidget.setHorizontalHeaderLabels(("Вуз",f"Фин. за {self.currentquartal[1]}"))
         self.tableWidget.verticalHeader().setVisible(False)
 
         if len(table) == 0:
