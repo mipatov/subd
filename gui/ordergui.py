@@ -1,5 +1,6 @@
 import dbmanager as dbm
 from fielddict import *
+from reportmanager import order
 from PyQt5.QtCore import Qt
 from gui.Forms import FormTableWidget, OnlyTableForm,OrderForm
 from PyQt5 import QtWidgets, QtCore,QtGui
@@ -33,12 +34,17 @@ class Order(QtWidgets.QDialog, OrderForm.Ui_Dialog,):
         self.quartcombo.currentIndexChanged.connect(self.checkcorrectfill)
 
 
+    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+        if "mdi" in dir(self.parent):
+            self.parent.mdi.closeAllSubWindows()
 
 
     def countcurrentfin(self):
         fin = dbm.getSumFin()
         self.fin = fin
-        self.ffinlabel.setText(f"{fin['ffin']} руб.")
+        perc = round(float(fin['ffin'] / fin['pfin']) * 100, 5)
+        self.ffinlabel.setText(f"{fin['ffin']} руб.; {perc}%")
+
         self.pfinlabel.setText(f"{fin['pfin']} руб.")
 
 
@@ -109,10 +115,12 @@ class Order(QtWidgets.QDialog, OrderForm.Ui_Dialog,):
     def acceptorder(self):
         dbm.AddFFinToNir(self.ffintables['nir'],self.currentquartal[0])
         dbm.SumFFinInProg()
-        self.countcurrentfin()
+        # self.countcurrentfin()
         path = QtWidgets.QFileDialog.getExistingDirectory()
+        order(self.ffintables['vuz'],f'Распоряжение на финанисрование {self.currentquartal[1]}',path)
         self.parent.statusbar.showMessage(f"Распоряжение сохранено в {path}")
         print("apply fin order")
+        self.close()
 
 
     def FillTable(self, table):

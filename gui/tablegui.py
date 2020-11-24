@@ -2,7 +2,7 @@ from gui.guimanager import *
 from gui.onerecordgui import *
 from gui.filtergui import *
 from fielddict import *
-from reportmanager import *
+from reportmanager import report
 import dbmanager as dbm
 from PyQt5.QtCore import Qt
 from gui.Forms import FormTableWidget, OnlyTableForm

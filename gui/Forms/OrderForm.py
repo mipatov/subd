@@ -196,7 +196,7 @@ class Ui_Dialog(object):
         self.pfinlabel.setText(_translate("Dialog", "00000"))
         self.ffinlabel.setText(_translate("Dialog", "00000"))
         self.label_3.setText(_translate("Dialog", "План:"))
-        self.label_2.setText(_translate("Dialog", "Суммарнторное финансирование:"))
+        self.label_2.setText(_translate("Dialog", "Суммарное финансирование:"))
         self.label_10.setText(_translate("Dialog", "руб."))
         self.label_11.setText(_translate("Dialog", "%"))
         self.quartcombo.setItemText(1, _translate("Dialog", "I квартал"))
