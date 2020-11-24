@@ -345,9 +345,19 @@ def getSumFin():
     with dbc.dbcon.cursor() as cur:
         cur.execute(f"SELECT  sum(pfin) pfin,sum(ffin) ffin FROM ntp_proj")
         fin = cur.fetchone()
-
-
     return fin
+
+def NirVuzFinDistribute(sumpfin,orderfin):
+    ffpintable = {}
+    with dbc.dbcon.cursor() as cur:
+        cur.execute(f"SELECT codprog, f, isp, round(pfin/{sumpfin}*{orderfin}) ffin FROM ntp_proj")
+        ffpintable['nir'] = cur.fetchall()
+        cur.execute(f"SELECT isp, sum(round(pfin/{sumpfin}*{orderfin})) ffin FROM ntp_proj group by isp")
+        ffpintable['vuz'] = cur.fetchall()
+    return ffpintable
+
+
+
 
 if __name__ == '__main__':
 

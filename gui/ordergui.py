@@ -1,4 +1,5 @@
 import dbmanager as dbm
+from fielddict import *
 from PyQt5.QtCore import Qt
 from gui.Forms import FormTableWidget, OnlyTableForm,OrderForm
 from PyQt5 import QtWidgets, QtCore,QtGui
@@ -8,7 +9,8 @@ class Order(QtWidgets.QDialog, OrderForm.Ui_Dialog,):
         super().__init__()
         self.setupUi(self)
         self.parent = parent
-
+        self.currentordersum = 0
+        self.currentquartal = ''
 
         self.setWindowTitle("Финансирование НИР")
         self.countcurrentfin()
@@ -22,7 +24,9 @@ class Order(QtWidgets.QDialog, OrderForm.Ui_Dialog,):
 
         self.discard.clicked.connect(self.close)
         self.acceptbtn.clicked.connect(self.acceptorder)
+        self.countbtn.clicked.connect(self.countorder)
         self.acceptbtn.setEnabled(False)
+        self.countbtn.setEnabled(False)
 
         self.sumfin.textChanged.connect(self.changesumfin)
         self.percentfin.textChanged.connect(self.changepercentfin)
@@ -74,12 +78,56 @@ class Order(QtWidgets.QDialog, OrderForm.Ui_Dialog,):
         else:
             print("wrong field")
 
+        try:
+            self.currentordersum = float(self.sumfin.text())
+        except:
+            self.currentordersum = 0
+
 
     def checkcorrectfill(self):
         correct = self.quartcombo.currentIndex()>0 and self.sumfin.text()!="" and self.percentfin.text()!=""
-        self.acceptbtn.setEnabled(correct)
+        self.countbtn.setEnabled(correct)
+        self.currentquartal = self.quartcombo.currentText()
 
+    def countorder(self):
+        self.ffintables = dbm.NirVuzFinDistribute(float(self.fin['pfin']),self.currentordersum)
+        self.tableWidget.setEnabled(True)
+        self.acceptbtn.setEnabled(True)
+        self.FillTable(self.ffintables['vuz'])
 
 
     def acceptorder(self):
         print("apply fin order")
+
+
+    def FillTable(self, table):
+        n, m = 2, len(table)
+        self.tableWidget.setColumnCount(n)
+        self.tableWidget.setHorizontalHeaderLabels(("Вуз",f"Фин. за {self.currentquartal}"))
+        self.tableWidget.verticalHeader().setVisible(False)
+
+        if len(table) == 0:
+            print("empty table")
+            self.tableWidget.setRowCount(0)
+            return
+
+        self.tableWidget.setRowCount(m+1)
+
+        sum = 0
+
+        for i in range(0, m):
+            j = 0
+            for cname in table[0].keys():
+                if cname == "ffin":
+                    sum+=table[i][cname]
+                item = QtWidgets.QTableWidgetItem(str(table[i][cname]))
+                item.setFlags(Qt.ItemIsEnabled)
+                self.tableWidget.setItem(i, j, item)
+                j += 1
+
+        vsegoitem = QtWidgets.QTableWidgetItem('Всего')
+        sumitem = QtWidgets.QTableWidgetItem(str(sum))
+        self.tableWidget.setItem(m, 0, vsegoitem)
+        self.tableWidget.setItem(m, 1, sumitem)
+
+        self.tableWidget.resizeColumnsToContents()
