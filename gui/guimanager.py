@@ -11,16 +11,24 @@ import dbmanager as dbm
 class MainWindow(QtWidgets.QMainWindow, Main.Ui_MainWindow):
 
 
-    def __init__(self, app):
+    def __init__(self, app, offline = False):
         super().__init__()
         self.setupUi(self)
 
+        if(offline) :
+            self.nir.setEnabled(False)
+            self.prog.setEnabled(False)
+            self.vuz.setEnabled(False)
+            self.orderbtn.setEnabled(False)
+
+            self.setWindowTitle(f'[OFFLINE MODE] {self.windowTitle()}')
 
         self.nir.triggered.connect(self.opennirtable)
         self.prog.triggered.connect(self.openprogtable)
         self.vuz.triggered.connect(self.openvuztable)
         self.closebtn.triggered.connect(app.closeAllWindows)
         self.orderbtn.triggered.connect(self.openorderform)
+        self.aboutbtn.triggered.connect(self.aboutdialog)
 
         # self.statusbar.showMessage("")
 
@@ -73,7 +81,30 @@ class MainWindow(QtWidgets.QMainWindow, Main.Ui_MainWindow):
         sub = self.mdi.addSubWindow(window)
         sub.showMaximized()
 
+    def aboutdialog(self):
+        self.about = QtWidgets.QDialog()
+        self.about.setWindowTitle("О программе")
 
+
+        label = QtWidgets.QLabel(self.about)
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        label.setFont(font)
+        abouttext = """Программа 'Сопровождение НТП'
+    
+Разработчики:
+    студенты НИУ МЭИ ИВТИ УИТ 
+    группы А-01-18
+        Ипатов М.А.
+        Ермакова М.И.
+        Иванов С.Е.
+        """
+        label.setText(abouttext)
+
+        layout = QtWidgets.QGridLayout(self.about)
+        layout.addWidget(label)
+
+        self.about.show()
 
 
 

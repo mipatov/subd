@@ -5,12 +5,13 @@ from gui.guimanager import *
 def main():
     dbm.checkconfig("config.ini")
     db = dbm.openDatabase("config.ini")
-    if not db:
-        print("closing app")
-        return
+    offline = not db
+    if offline:
+        print("open app without database connection")
+
     app = QtWidgets.QApplication([])
 
-    window = MainWindow(app)
+    window = MainWindow(app,offline)
 
 
     window.dbref = db
