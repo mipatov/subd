@@ -1,12 +1,19 @@
-from PyQt5.QtCore import Qt
+import os
+import codecs
+from PyQt5.QtCore import QUrl
+from PyQt5.QtWebEngineWidgets import QWebEngineView
+
 from gui.Forms import OnlyTableForm,Main, OrderForm
-from PyQt5 import QtWidgets, QtCore,QtGui
+from PyQt5 import QtWidgets, QtCore,QtGui#, QtHelp
 from gui.tablegui import *
 from gui.ordergui import *
+
 
 import dbmanager as dbm
 # pyuic5 gui/Forms/RemoveForm.ui -o gui/Forms/RemoveForm.py
 # pyuic5 gui/Forms/FormTable.ui -o gui/Forms/FormTableWidget.py
+
+CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 class MainWindow(QtWidgets.QMainWindow, Main.Ui_MainWindow):
 
@@ -29,6 +36,7 @@ class MainWindow(QtWidgets.QMainWindow, Main.Ui_MainWindow):
         self.closebtn.triggered.connect(app.closeAllWindows)
         self.orderbtn.triggered.connect(self.openorderform)
         self.aboutbtn.triggered.connect(self.aboutdialog)
+        self.helpbtn.triggered.connect(self.showhelp)
 
         # self.statusbar.showMessage("")
 
@@ -105,6 +113,18 @@ class MainWindow(QtWidgets.QMainWindow, Main.Ui_MainWindow):
         layout.addWidget(label)
 
         self.about.show()
+
+    def showhelp(self):
+        self.helpview = QWebEngineView()
+
+        path = f"{self.projpath}\\doc\\doc.htm"
+        if not os.path.exists(path):
+            print("Не удалось найти справочные материалы")
+            return 
+        self.helpview.load(QUrl.fromLocalFile(path))
+        self.helpview.setWindowTitle("Справка")
+        self.helpview.resize(800,600)
+        self.helpview.show()
 
 
 
